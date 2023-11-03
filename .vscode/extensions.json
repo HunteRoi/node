@@ -1,0 +1,23 @@
+{
+    "recommendations": [
+        "ms-azuretools.vscode-docker",
+        "peterschmalfeldt.explorer-exclude",
+        "ldez.ignore-files",
+        "yzhang.markdown-all-in-one",
+        "shd101wyy.markdown-preview-enhanced",
+        "mscgenjs.vscode-mscgen",
+        "adrianwilczynski.toggle-hidden",
+        "arichika.previewseqdiag-vscode",
+        "ms-python.python",
+        "jkiviluoto.tws",
+        "knisterpeter.vscode-commitizen",
+        "redhat.vscode-yaml",
+        "hediet.vscode-drawio",
+        "msfukui.eof-mark",
+        "redhat.vscode-xml",
+        "pamaron.pytest-runner",
+        "ms-python.pylint",
+        "ms-python.autopep8",
+        "ms-python.vscode-pylance"
+    ]
+}

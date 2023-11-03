@@ -1,0 +1,49 @@
+# .gitlab-ci.yml
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+stages:
+  - test-n-coverage
+  - deploy_coverage
+
+image: python:latest
+
+before_script:
+  - python --version ; pip --version  # For debugging
+  - pip install virtualenv
+  - virtualenv venv
+  - source venv/bin/activate
+  - pip install -r requirements.txt
+
+test_job:
+  stage: test-n-coverage
+  allow_failure: false
+  coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
+  script:
+    - pytest --cov=./src --cov-report=term --cov-report=html --cov-report=json --cov-report=xml --junitxml=coverage/report.xml
+  artifacts:
+    when: always
+    reports:
+      junit: coverage/report.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/cov.xml
+    paths:
+      - coverage/html
+
+pages:
+  stage: deploy_coverage
+  dependencies:
+    - test_job
+  script:
+    - mkdir .public
+    - cp -r coverage/html/* .public
+    - mv .public public
+  artifacts:
+    paths:
+      - public
+  only:
+    - main

@@ -15,21 +15,28 @@
   - `adresse ip`
   - `date de création`
   - `date de dernière connexion`
+  - `clé publique` et `clé privée` de chiffrement
+
+- **`Communauté`**
+  - `id` (unique)
+  - `name`
+  - `description`
+  - `clé symétrique` de chiffrement
 
 
 ## Choix de la technologie d'enregistrement
 
-Après analyse des données à retenir, le choix d'utiliser une base de données (PostgreSql, MariaDB...) se trouve surdimensionné.  
-En effet, nous ne devons pas retenir une structure de données complexe et vouée à être modifiée.  
+Après analyse des données à retenir, le choix d'utiliser une base de données (PostgreSql, MariaDB...) se trouve surdimensionné.
+En effet, nous ne devons pas retenir une structure de données complexe et vouée à être modifiée.
 Le choix donc se porte sur ***un enregistrement sur fichiers***.
 
 Pour ce choix, plusieurs technologies :
-- **Fichiers simples**  
+- **Fichiers simples**
   - Gestion "à la main" de l'accès R/W des données. Cela implique une très grande rigourosité dans la gestion des accès aux fichiers, au risque de rendre toutes les données erronées.
   - Utilisation des accès fichiers pour accéder aux données.
 
 - **SqLite**  ([Documentation](https://www.sqlite.org/index.html))
-  - Gestion automatisée de l'accès R/W des données.  
+  - Gestion automatisée de l'accès R/W des données.
   - Utilisation de SQL pour accéder aux données.
 
 Nous choisissons ***SqLite*** pour l'enregistrement des données grâce à sa simplicité d'utilisation et de gestion des fichiers.

@@ -1,0 +1,14 @@
+[run]
+data_file = coverage/.coverage
+omit = tests/*
+disable_warnings = no-data-collected
+[report]
+precision = 2
+omit = **/__init__.py
+[xml]
+output = coverage/cov.xml
+[json]
+output = coverage/cov.json
+pretty_print = True
+[html]
+directory = coverage/html
