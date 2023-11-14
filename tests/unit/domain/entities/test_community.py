@@ -56,16 +56,16 @@ class TestCommunity:
     def test_add_member(self):
         """Validates that a member can be added to the community"""
         community = Community("1", "name", "desc")
-        member = Member("127.0.0.1", datetime.now())
+        member = Member("abc", "127.0.0.1", datetime.now())
 
         community.add_member(member)
 
-        assert member.ip_address in community.members
+        assert member.authentication_key in community.members
 
     def test_remove_member(self):
         """Validate that a member can be removed from the community"""
         community = Community("1", "name", "desc")
-        member = Member("127.0.0.1", datetime.now())
+        member = Member("abc", "127.0.0.1", datetime.now())
 
         community.add_member(member)
         assert len(community.members) == 1
@@ -76,8 +76,8 @@ class TestCommunity:
     def test_remove_member_specific(self):
         """Validate that a specific member can be removed from the community"""
         community = Community("1", "name", "desc")
-        member = Member("127.0.0.1", datetime.now())
-        member2 = Member("127.0.0.2", datetime.now())
+        member = Member("abc", "127.0.0.1", datetime.now())
+        member2 = Member("def", "127.0.0.1", datetime.now())
 
         community.add_member(member)
         community.add_member(member2)
@@ -87,16 +87,39 @@ class TestCommunity:
         community.remove_member(member2)
 
         assert len(community.members) == 1
-        assert member.ip_address in community.members
+        assert member.authentication_key in community.members
 
-    def test_remove_member_based_on_ip(self):
-        """Validate that a member can be removed from the community if the IP is the same"""
+    def test_remove_member_based_on_auth_key(self):
+        """Validate that a member can be removed from the community 
+        if the authentication key is the same"""
         community = Community("1", "name", "desc")
-        member = Member("127.0.0.1", datetime.now())
+        member = Member("abc", "127.0.0.1", datetime.now())
 
         community.add_member(member)
         assert len(community.members) == 1
 
-        community.remove_member_based_on(member.ip_address)
+        community.remove_member_based_on(member.authentication_key)
 
         assert len(community.members) == 0
+
+    def test_community_compared_to_another(self):
+        """Validate that a community can be compared to another community"""
+        community = Community("1", "name", "desc")
+        community2 = Community("1", "name", "desc")
+
+        assert community == community2
+
+    def test_community_compared_to_another_with_different_id(self):
+        """Validate that a community can be compared to another community 
+        with a different ID"""
+        community = Community("1", "name", "desc")
+        community2 = Community("2", "name", "desc")
+
+        assert community != community2
+
+    def test_community_compared_to_another_object(self):
+        """Validate that a community can be compared to another object"""
+        community = Community("1", "name", "desc")
+        community2 = "community"
+
+        assert community != community2

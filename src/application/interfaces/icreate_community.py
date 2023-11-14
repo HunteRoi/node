@@ -6,4 +6,4 @@ class ICreateCommunity(ABC):
 
     @abstractmethod
     def execute(self, name: str, description: str):
-        """The execute method of the use case"""
+        """Create a community"""

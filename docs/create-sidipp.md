@@ -1,4 +1,4 @@
-# Documentation on #11
+# Documentation sur #11
 
 ## Développement de la couche "Domain"
 Nous avons décidé de commencer par la couche la plus centrale (et donc la plus indépendante) appelée "Domain".
@@ -32,5 +32,5 @@ Dans notre cas actuel, pour générer l'identifiant nous utilisons la librairie 
 
 En ce qui concerne le stockage des données, nous avons choisi d'utiliser une base de données `sqlite3`. Pour valider son utilisation,
 nous allons donc tester la création d'une communauté et son stockage dans la base de données.
-Puisque cela repose sur le système d'exploitation et le framework "sqlite", notre test sera un test d'intégration pour la classe `SqliteCommunityRepository` implémentant l'interface `ICommunityRepository`.
+Puisque cela repose sur le système d'exploitation et le framework "sqlite", notre test sera un test d'intégration pour la classe `CommunityRepository` implémentant l'interface `ICommunityRepository`.
 Dans un deuxième temps, nous testons et implémentons l'obtention d'une communauté à partir de son identifiant depuis la base de données.
