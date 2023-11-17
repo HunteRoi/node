@@ -27,17 +27,17 @@ class SelectCommunityMenu(SubMenu):
 
         communities = self.read_communities_usecase.execute()
         for community in communities:
-            submenu = ReadIdeasMenu(
-                community,
-                self.read_ideas_from_community_usecase,
-                self.read_opinions_usecase
-            )
-            self._add_community_item(community, submenu)
+            self._add_community_item(community)
 
-        return super().start(show_exit_option)
+        super().start(show_exit_option)
 
-    def _add_community_item(self, community: Community, submenu: SubMenu):
+    def _add_community_item(self, community: Community):
         """Adds a community item to the menu"""
+        submenu = ReadIdeasMenu(
+            community,
+            self.read_ideas_from_community_usecase,
+            self.read_opinions_usecase
+        )
         community_item = SubmenuItem(
             community.name,
             submenu,

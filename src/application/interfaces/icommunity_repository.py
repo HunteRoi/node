@@ -7,6 +7,10 @@ class ICommunityRepository(ABC):
     """Interface for the repository class"""
 
     @abstractmethod
+    def initialize_if_not_exists(self, target_database: str):
+        """Initialize the requirements"""
+
+    @abstractmethod
     def add_community(self, community: Community, member_auth_key: str) -> None:
         """Add a community to the repository"""
 

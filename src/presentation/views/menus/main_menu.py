@@ -52,4 +52,4 @@ class MainMenu(Menu):
         )
         self.append_item(read_community_item)
 
-        return super().start(show_exit_option)
+        super().start(show_exit_option)

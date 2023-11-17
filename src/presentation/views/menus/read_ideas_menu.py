@@ -19,7 +19,7 @@ class ReadIdeasMenu(SubMenu):
 
         self.community = community
         self.read_ideas_usecase = read_ideas_usecase
-        self.read_opinions_usecase: read_opinions_usecase
+        self.read_opinions_usecase = read_opinions_usecase
 
     def start(self, show_exit_option: bool | None = None):
         """Creates the menu with the ideas and shows it"""
@@ -29,13 +29,12 @@ class ReadIdeasMenu(SubMenu):
         for idea in ideas:
             self._add_idea_item(idea)
 
-        return super().start(show_exit_option)
+        super().start(show_exit_option)
 
     def _add_idea_item(self, idea: Idea):
         """Adds an idea item to the menu"""
         submenu = ReadOpinionsMenu(self.community,
                                    idea,
-                                   self.read_ideas_usecase,
                                    self.read_opinions_usecase)
         item = SubmenuItem(
             idea.content,

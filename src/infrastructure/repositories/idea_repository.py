@@ -7,7 +7,7 @@ from src.domain.entities.idea import Idea
 class IdeaRepository(IIdeaRepository, SqliteRepository):
     """Idea repository"""
 
-    def _initialize_if_not_exists(self, target_database: str):
+    def initialize_if_not_exists(self, target_database: str) -> None:
         self._execute_statement(
             target_database,
             """CREATE TABLE IF NOT EXISTS messages (
@@ -20,7 +20,7 @@ class IdeaRepository(IIdeaRepository, SqliteRepository):
         )
 
     def add_idea_to_community(self, community_id: str, idea: Idea) -> None:
-        self._initialize_if_not_exists(community_id)
+        self.initialize_if_not_exists(community_id)
 
         self._execute_statement(
             community_id,

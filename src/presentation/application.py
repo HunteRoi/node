@@ -68,6 +68,8 @@ class Application:
         Application.create_community_usecase = CreateCommunity(
             Application.community_repository,
             Application.member_repository,
+            Application.idea_repository,
+            Application.opinion_repository,
             Application.id_generator,
             Application.machine_service,
         )

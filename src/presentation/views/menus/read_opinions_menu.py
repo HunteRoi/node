@@ -4,7 +4,6 @@ from src.presentation.views.generics.submenu import SubMenu
 from src.domain.entities.community import Community
 from src.domain.entities.idea import Idea
 from src.domain.entities.opinion import Opinion
-from src.application.interfaces.iread_ideas_from_community import IReadIdeasFromCommunity
 from src.application.interfaces.iread_opinions import IReadOpinions
 
 
@@ -13,22 +12,21 @@ class ReadOpinionsMenu(SubMenu):
 
     def __init__(self,
                  community: Community,
-                 parent: Idea | Opinion,
-                 read_ideas_usecase: IReadIdeasFromCommunity,
+                 parent_: Idea | Opinion,
                  read_opinions_usecase: IReadOpinions):
-        super().__init__(self._get_menu_title(parent))
+        super().__init__(self._get_menu_title(parent_))
 
-        self.parent = parent
+        # self.parent is inherited from ConsoleMenu which means
+        # it cannot be used as a custom class attribute
+        # so it's named parent_
+        self.parent_ = parent_
         self.community = community
-        self.read_ideas_usecase = read_ideas_usecase
         self.read_opinions_usecase = read_opinions_usecase
 
-    def _get_menu_title(self, parent: Idea | Opinion) -> str:
+    def _get_menu_title(self, parent_: Idea | Opinion) -> str:
         """Builds the menu title"""
-        if isinstance(parent, Idea):
-            return f"Les prises de position de l'idée \"{parent.content}\""
-        else:
-            return f"Les prises de position de la prise de position \"{parent.content}\""
+        return f"Les prises de position de {"l'idée" if isinstance(parent_, Idea) \
+            else "la prise de position"} \"{parent_.content}\""
 
     def start(self, show_exit_option: bool | None = None):
         """Creates the menu with the opinions and shows it"""
@@ -36,18 +34,17 @@ class ReadOpinionsMenu(SubMenu):
 
         opinions = self.read_opinions_usecase.execute(
             self.community.identifier,
-            self.parent.identifier
+            self.parent_.identifier
         )
         for opinion in opinions:
             self._add_opinion_item(opinion)
 
-        return super().start(show_exit_option)
+        super().start(show_exit_option)
 
     def _add_opinion_item(self, opinion: Opinion):
         """Adds an opinion item to the menu"""
         submenu = ReadOpinionsMenu(self.community,
                                    opinion,
-                                   self.read_ideas_usecase,
                                    self.read_opinions_usecase)
         item = SubmenuItem(
             opinion.content,

@@ -10,7 +10,7 @@ from src.domain.entities.member import Member
 class MemberRepository(IMemberRepository, SqliteRepository):
     """Sqlite implementation of the member repository class"""
 
-    def _initialize_if_not_exists(self, target_database: str):
+    def initialize_if_not_exists(self, target_database: str):
         self._execute_statement(
             target_database,
             """CREATE TABLE IF NOT EXISTS nodes (
@@ -22,7 +22,7 @@ class MemberRepository(IMemberRepository, SqliteRepository):
         )
 
     def add_member_to_community(self, community_id: str, member: Member) -> None:
-        self._initialize_if_not_exists(community_id)
+        self.initialize_if_not_exists(community_id)
 
         try:
             self._execute_statement(
@@ -38,7 +38,7 @@ class MemberRepository(IMemberRepository, SqliteRepository):
                 raise MemberAlreadyExistsError(error) from error
 
     def get_member_for_community(self, community_id: str, member_auth_key: str) -> Member | None:
-        self._initialize_if_not_exists(community_id)
+        self.initialize_if_not_exists(community_id)
 
         result = self._execute_query(
             community_id,

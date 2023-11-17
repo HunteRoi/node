@@ -7,7 +7,7 @@ from src.domain.entities.opinion import Opinion
 class OpinionRepository(IOpinionRepository, SqliteRepository):
     """Opinion repository"""
 
-    def _initialize_if_not_exists(self, target_database: str):
+    def initialize_if_not_exists(self, target_database: str):
         self._execute_statement(
             target_database,
             """CREATE TABLE IF NOT EXISTS messages (
@@ -20,7 +20,7 @@ class OpinionRepository(IOpinionRepository, SqliteRepository):
         )
 
     def add_opinion_to_community(self, community_id: str, opinion: Opinion) -> None:
-        self._initialize_if_not_exists(community_id)
+        self.initialize_if_not_exists(community_id)
 
         self._execute_statement(
             community_id,

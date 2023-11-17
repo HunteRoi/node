@@ -28,7 +28,3 @@ class SqliteRepository(ABC):
             index_cursor = index_connection.cursor()
             result = index_cursor.execute(statement, parameters)
             return result.fetchall()
-
-    @abstractmethod
-    def _initialize_if_not_exists(self, target_database: str):
-        """Initialize the related database if it does not exist"""

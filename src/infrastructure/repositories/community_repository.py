@@ -14,9 +14,9 @@ class CommunityRepository(ICommunityRepository, SqliteRepository):
 
     def __init__(self, base_path: str):
         super().__init__(base_path)
-        self._initialize_if_not_exists(CommunityRepository.index_database)
+        self.initialize_if_not_exists(CommunityRepository.index_database)
 
-    def _initialize_if_not_exists(self, target_database: str):
+    def initialize_if_not_exists(self, target_database: str):
         self._execute_statement(
             target_database,
             """CREATE TABLE IF NOT EXISTS communities (
