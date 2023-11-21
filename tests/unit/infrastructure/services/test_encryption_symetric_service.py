@@ -2,6 +2,7 @@ from src.infrastructure.services.encryption_symetric_service import EncryptionSy
 
 
 class TestEncryptionSymetricService:
+    """Test encryption symetric service"""
 
     def test_generate_symetric_key(self):
         """Test generate ramdom symetric  key"""
