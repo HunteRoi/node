@@ -1,8 +1,14 @@
 repos:
-  - repo: https://github.com/hhatto/autopep8
-    rev: 8f12c0a
+  - repo: https://github.com/psf/black-pre-commit-mirror
+    rev: 23.11.0
     hooks:
-      - id: autopep8
+      - id: black
+        # It is recommended to specify the latest version of Python
+        # supported by your project here, or alternatively use
+        # pre-commit's default_language_version, see
+        # https://pre-commit.com/#top_level-default_language_version
+        language_version: python3.12
+        stages: [ commit ]
   - repo: local
     hooks:
       - id: pytest
@@ -21,7 +27,7 @@ repos:
           ]
         always_run: true
         pass_filenames: false
-        stages: [commit]
+        stages: [ push ]
       - id: pylint
         name: pylint
         language: system
@@ -35,10 +41,10 @@ repos:
           ]
         always_run: true
         pass_filenames: false
-        stages: [commit]
+        stages: [ push ]
       - id: requirements
         name: requirements
         entry: "pip3 freeze > requirements.txt; git add requirements.txt"
         language: system
         pass_filenames: false
-        stages: [commit]
+        stages: [ commit ]

@@ -14,7 +14,7 @@ Les algorithmes de chiffrement symétriques utilisent une seule clé pour le chi
 
 - Advanced Encryption Standard (AES)
 - Data Encryption Standard (DES)
-- Triple DES (3DES
+- Triple DES (3DES)
 
 ## Algorithmes Asymétriques
 
@@ -38,7 +38,7 @@ Les algorithmes de chiffrement asymétriques utilisent une paire de clés, une c
 | **Exemples d'algorithmes** | AES, DES, 3DES                                                  | RSA, DSA, ECC                                                              |
 
 ### Choix
-On se rend compte que dans notre contexte on aura besoin de de faire des échanges de données en vrac (partarge et chiffrement de fichiers ...) masi également dés échanges de clés. d'où l'utilisation des algorithmes symétriques mais également des algorithmes asymétriques.
+On se rend compte que dans notre contexte on aura besoin de faire des échanges de données en vrac (partarge et chiffrement de fichiers...) mais également dés échanges de clés, d'où l'utilisation des algorithmes symétriques mais également des algorithmes asymétriques.
 
 #### Choix de algorithmes symétriques
 

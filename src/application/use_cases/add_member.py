@@ -1,6 +1,10 @@
 from src.domain.entities.member import Member
-from src.application.exceptions.authentification_failed_error import AuthentificationFailedError
-from src.application.interfaces.iencryption_asymetric_service import IEncryptionAsymetricService
+from src.application.exceptions.authentification_failed_error import (
+    AuthentificationFailedError,
+)
+from src.application.interfaces.iasymetric_encryption_service import (
+    IAsymetricEncryptionService,
+)
 from src.application.interfaces.iid_generator_service import IIdGeneratorService
 from src.application.interfaces.imember_repository import IMemberRepository
 from src.application.interfaces.iadd_member import IAddMember
@@ -10,11 +14,13 @@ from src.application.interfaces.iclient_socket import IClientSocket
 class AddMember(IAddMember):
     """Add a member to a community"""
 
-    def __init__(self,
-                 uuid_generator: IIdGeneratorService,
-                 encryption_service: IEncryptionAsymetricService,
-                 client_socket: IClientSocket,
-                 member_repository: IMemberRepository):
+    def __init__(
+        self,
+        uuid_generator: IIdGeneratorService,
+        encryption_service: IAsymetricEncryptionService,
+        client_socket: IClientSocket,
+        member_repository: IMemberRepository,
+    ):
         self.encryption_service = encryption_service
         self.uuid_generator = uuid_generator
         self.client_socket = client_socket
@@ -44,8 +50,7 @@ class AddMember(IAddMember):
         """Give the auth key to the new member"""
         auth_key = self.uuid_generator.generate()
 
-        encrypted_auth_key = self.encryption_service.asymetric_key_encryption(auth_key,
-                                                                              public_key)
+        encrypted_auth_key = self.encryption_service.encrypt(auth_key, public_key)
 
         self.client_socket.send_message(encrypted_auth_key)
 
@@ -55,11 +60,12 @@ class AddMember(IAddMember):
             raise AuthentificationFailedError("Authentification key not valid")
         return auth_key
 
-    def _add_member_to_community(self, community_id: str, auth_key: str, ip_address: str):
+    def _add_member_to_community(
+        self, community_id: str, auth_key: str, ip_address: str
+    ):
         member = Member(auth_key, ip_address)
         self.member_repository.add_member_to_community(community_id, member)
 
     def _close_connection(self):
-        self.client_socket.send_message(
-            "You are now a member of the community")
+        self.client_socket.send_message("You are now a member of the community")
         self.client_socket.close_connection()

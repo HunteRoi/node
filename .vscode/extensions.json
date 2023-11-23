@@ -8,7 +8,6 @@
         "mscgenjs.vscode-mscgen",
         "adrianwilczynski.toggle-hidden",
         "arichika.previewseqdiag-vscode",
-        "ms-python.python",
         "jkiviluoto.tws",
         "knisterpeter.vscode-commitizen",
         "redhat.vscode-yaml",
@@ -17,7 +16,8 @@
         "redhat.vscode-xml",
         "pamaron.pytest-runner",
         "ms-python.pylint",
-        "ms-python.autopep8",
-        "ms-python.vscode-pylance"
+        "ms-python.vscode-pylance",
+        "ms-python.black-formatter",
+        "ms-python.python"
     ]
 }
