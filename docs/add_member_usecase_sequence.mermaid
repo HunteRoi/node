@@ -1,0 +1,22 @@
+sequenceDiagram
+    participant m as Membre
+    participant i as Invité
+
+    m ->> i: Envoie une invitation avec sa clé publique
+    i ->> m: Envoie sa clé publique
+    m ->> m: Génère le code d'authentification
+    m ->> m: Chiffre le code avec la clé publique
+    m ->> i: Envoie le code d'authentification chiffré
+    i ->> i: Déchiffre le code d'authentification avec sa clé privée
+    i ->> i: Chiffre le code déchiffré avec la clé publique du membre
+    i ->> m: Envoie le code d'authentification à nouveau chiffré
+    m ->> m: Déchiffre le code avec sa clé privée
+    alt Le code est identique
+        m ->> m: Ajoute le membre à la communauté
+        m ->> m: Chiffre la clé symétrique de la communauté avec la clé publique de l'invité
+        m ->> i: Envoie une confirmation avec la clé symétrique de la communauté chiffrée
+        i ->> i: Déchiffre la clé symétrique de la communauté avec sa clé privée
+    else Le code n'est pas identique
+        m ->> i: Envoie une infirmation
+    end
+    

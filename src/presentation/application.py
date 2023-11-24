@@ -1,18 +1,23 @@
 import os
 
 from src.application.interfaces.imachine_service import IMachineService
+from src.application.interfaces.iid_generator_service import IIdGeneratorService
+from src.application.interfaces.iencryption_asymetric_service import IEncryptionAsymetricService
+from src.application.interfaces.iclient_socket import IClientSocket
 from src.application.interfaces.icommunity_repository import ICommunityRepository
 from src.application.interfaces.imember_repository import IMemberRepository
 from src.application.interfaces.iidea_repository import IIdeaRepository
 from src.application.interfaces.iopinion_repository import IOpinionRepository
-from src.application.interfaces.iid_generator_service import IIdGeneratorService
 from src.infrastructure.repositories.community_repository import CommunityRepository
 from src.infrastructure.repositories.member_repository import MemberRepository
 from src.infrastructure.repositories.idea_repository import IdeaRepository
 from src.infrastructure.repositories.opinion_repository import OpinionRepository
 from src.infrastructure.services.uuid_generator_service import UuidGeneratorService
 from src.infrastructure.services.machine_service import MachineService
+from src.infrastructure.services.encryption_asymetric_service import EncryptionAsymetricService
+from src.presentation.network.client import Client
 from src.application.use_cases.create_community import CreateCommunity
+from src.application.use_cases.add_member import AddMember
 from src.application.use_cases.read_communities import ReadCommunities
 from src.application.use_cases.read_ideas_from_community import ReadIdeasFromCommunity
 from src.application.use_cases.read_opinions import ReadOpinions
@@ -24,11 +29,14 @@ class Application:
 
     machine_service: IMachineService
     id_generator: IIdGeneratorService
+    encryption_asymetric_service: IEncryptionAsymetricService
+    client_socket: IClientSocket
     community_repository: ICommunityRepository
     member_repository: IMemberRepository
     idea_repository: IIdeaRepository
     opinion_repository: IOpinionRepository
     create_community_usecase: CreateCommunity
+    add_member_usecase: AddMember
     read_communities_usecase: ReadCommunities
     read_ideas_from_community_usecase: ReadIdeasFromCommunity
     read_opinions_usecase: ReadOpinions
@@ -40,6 +48,7 @@ class Application:
 
         MainMenu(
             Application.create_community_usecase,
+            Application.add_member_usecase,
             Application.read_communities_usecase,
             Application.read_ideas_from_community_usecase,
             Application.read_opinions_usecase
@@ -63,6 +72,10 @@ class Application:
             Application.community_repository,
             Application.id_generator
         )
+        Application.encryption_asymetric_service = EncryptionAsymetricService()
+
+        # Network
+        Application.client_socket = Client()
 
         # Use cases
         Application.create_community_usecase = CreateCommunity(
@@ -72,6 +85,12 @@ class Application:
             Application.opinion_repository,
             Application.id_generator,
             Application.machine_service,
+        )
+        Application.add_member_usecase = AddMember(
+            Application.id_generator,
+            Application.encryption_asymetric_service,
+            Application.client_socket,
+            Application.member_repository,
         )
         Application.read_communities_usecase = ReadCommunities(
             Application.community_repository
