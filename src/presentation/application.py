@@ -2,7 +2,9 @@ import os
 
 from src.application.interfaces.imachine_service import IMachineService
 from src.application.interfaces.iid_generator_service import IIdGeneratorService
-from src.application.interfaces.iencryption_asymetric_service import IEncryptionAsymetricService
+from src.application.interfaces.iasymetric_encryption_service import (
+    IAsymetricEncryptionService,
+)
 from src.application.interfaces.iclient_socket import IClientSocket
 from src.application.interfaces.icommunity_repository import ICommunityRepository
 from src.application.interfaces.imember_repository import IMemberRepository
@@ -14,7 +16,9 @@ from src.infrastructure.repositories.idea_repository import IdeaRepository
 from src.infrastructure.repositories.opinion_repository import OpinionRepository
 from src.infrastructure.services.uuid_generator_service import UuidGeneratorService
 from src.infrastructure.services.machine_service import MachineService
-from src.infrastructure.services.encryption_asymetric_service import EncryptionAsymetricService
+from src.infrastructure.services.asymetric_encryption_service import (
+    AsymetricEncryptionService,
+)
 from src.presentation.network.client import Client
 from src.application.use_cases.create_community import CreateCommunity
 from src.application.use_cases.add_member import AddMember
@@ -29,7 +33,7 @@ class Application:
 
     machine_service: IMachineService
     id_generator: IIdGeneratorService
-    encryption_asymetric_service: IEncryptionAsymetricService
+    encryption_asymetric_service: IAsymetricEncryptionService
     client_socket: IClientSocket
     community_repository: ICommunityRepository
     member_repository: IMemberRepository
@@ -51,7 +55,7 @@ class Application:
             Application.add_member_usecase,
             Application.read_communities_usecase,
             Application.read_ideas_from_community_usecase,
-            Application.read_opinions_usecase
+            Application.read_opinions_usecase,
         ).show()
 
     @staticmethod
@@ -69,10 +73,9 @@ class Application:
         # Services
         Application.id_generator = UuidGeneratorService()
         Application.machine_service = MachineService(
-            Application.community_repository,
-            Application.id_generator
+            Application.community_repository, Application.id_generator
         )
-        Application.encryption_asymetric_service = EncryptionAsymetricService()
+        Application.encryption_asymetric_service = AsymetricEncryptionService()
 
         # Network
         Application.client_socket = Client()
@@ -98,6 +101,4 @@ class Application:
         Application.read_ideas_from_community_usecase = ReadIdeasFromCommunity(
             Application.idea_repository
         )
-        Application.read_opinions_usecase = ReadOpinions(
-            Application.opinion_repository
-        )
+        Application.read_opinions_usecase = ReadOpinions(Application.opinion_repository)
