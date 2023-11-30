@@ -31,7 +31,7 @@ class AddMember(IAddMember):
 
         auth_key = self._send_auth_key(public_key)
 
-        self._add_member_to_community(community_id, auth_key, ip_address)
+        self._add_member_to_community(community_id, auth_key, ip_address, port)
 
         self._close_connection()
 
@@ -61,9 +61,9 @@ class AddMember(IAddMember):
         return auth_key
 
     def _add_member_to_community(
-        self, community_id: str, auth_key: str, ip_address: str
+        self, community_id: str, auth_key: str, ip_address: str, port: int
     ):
-        member = Member(auth_key, ip_address)
+        member = Member(auth_key, ip_address, port)
         self.member_repository.add_member_to_community(community_id, member)
 
     def _close_connection(self):

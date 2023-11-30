@@ -32,22 +32,23 @@ class TestAddMember:
         member_repository: MagicMock,
     ):
         """Test succefull connection"""
-        adress_ip = "127.0.0.1"
-        port = 1234
-
+        ip_address = "127.0.0.1"
+        port = 1024
+        guest = tuple(["127.0.0.1", 1111])
+        auth_code = "auth_code"
+        public_key = "public_key"
+        uuid_generator.generate.return_value = auth_code
+        mock_client.receive_message.side_effect = [
+            tuple([public_key, guest]),
+            tuple([auth_code, guest]),
+        ]
         add_member_use_case = AddMember(
             uuid_generator, encryption_service, mock_client, member_repository
         )
 
-        uuid_generator.generate.return_value = "auth_key"
-        mock_client.receive_message.side_effect = [
-            tuple(["public_key", tuple(["127.0.0.1", 1111])]),
-            tuple(["auth_key", tuple(["127.0.0.1", 1111])]),
-        ]
+        add_member_use_case.execute("abc", ip_address, port)
 
-        add_member_use_case.execute("abc", adress_ip, port)
-
-        mock_client.connect_to_server.assert_called_once_with(adress_ip, port)
+        mock_client.connect_to_server.assert_called_once_with(ip_address, port)
 
     @mock.patch(
         "src.application.interfaces.iasymetric_encryption_service",
@@ -68,17 +69,21 @@ class TestAddMember:
         member_repository: MagicMock,
     ):
         """method to test send member invitation"""
+        ip_address = "127.0.0.1"
+        port = 1024
+        guest = tuple(["127.0.0.1", 1111])
+        auth_code = "auth_code"
+        public_key = "public_key"
+        uuid_generator.generate.return_value = auth_code
+        mock_client.receive_message.side_effect = [
+            tuple([public_key, guest]),
+            tuple([auth_code, guest]),
+        ]
         add_member_use_case = AddMember(
             uuid_generator, encryption_service, mock_client, member_repository
         )
 
-        uuid_generator.generate.return_value = "auth_key"
-        mock_client.receive_message.side_effect = [
-            tuple(["public_key", tuple(["127.0.0.1", 1111])]),
-            tuple(["auth_key", tuple(["127.0.0.1", 1111])]),
-        ]
-
-        add_member_use_case.execute("abc", "127.0.0.1", 1234)
+        add_member_use_case.execute("abc", ip_address, port)
 
         mock_client.send_message.assert_any_call("invitation")
 
@@ -101,17 +106,21 @@ class TestAddMember:
         member_repository: MagicMock,
     ):
         """method to test add member to community"""
+        ip_address = "127.0.0.1"
+        port = 1024
+        guest = tuple(["127.0.0.1", 1111])
+        auth_code = "auth_code"
+        public_key = "public_key"
+        uuid_generator.generate.return_value = auth_code
+        mock_client.receive_message.side_effect = [
+            tuple([public_key, guest]),
+            tuple([auth_code, guest]),
+        ]
         add_member_use_case = AddMember(
             uuid_generator, encryption_service, mock_client, member_repository
         )
 
-        uuid_generator.generate.return_value = "auth_key"
-        mock_client.receive_message.side_effect = [
-            tuple(["public_key", tuple(["127.0.0.1", 1111])]),
-            tuple(["auth_key", tuple(["127.0.0.1", 1111])]),
-        ]
-
-        add_member_use_case.execute("abc", "127.0.0.1", 1234)
+        add_member_use_case.execute("abc", ip_address, port)
 
         uuid_generator.generate.assert_called_once()
 
@@ -134,18 +143,21 @@ class TestAddMember:
         member_repository: MagicMock,
     ):
         """method to test add member to community"""
+        ip_address = "127.0.0.1"
+        port = 1024
+        guest = tuple(["127.0.0.1", 1111])
+        public_key = "public_key"
+        uuid_generator.generate.return_value = "auth_code"
+        mock_client.receive_message.side_effect = [
+            tuple([public_key, guest]),
+            tuple(["other_auth_code", guest]),
+        ]
         add_member_use_case = AddMember(
             uuid_generator, encryption_service, mock_client, member_repository
         )
 
-        uuid_generator.generate.return_value = "auth_key"
-        mock_client.receive_message.side_effect = [
-            tuple(["public_key", tuple(["127.0.0.1", 1111])]),
-            tuple(["auth_key_invalid", tuple(["127.0.0.1", 1111])]),
-        ]
-
         with pytest.raises(AuthentificationFailedError):
-            add_member_use_case.execute("abc", "127.0.0.1", 1234)
+            add_member_use_case.execute("abc", ip_address, port)
 
     @mock.patch(
         "src.application.interfaces.iasymetric_encryption_service",
@@ -166,20 +178,28 @@ class TestAddMember:
         member_repository: MagicMock,
     ):
         """method to test add member to community"""
+        ip_address = "127.0.0.1"
+        port = 1024
+        guest = tuple(["127.0.0.1", 1111])
+        auth_code = "auth_code"
+        public_key = "public_key"
+        uuid_generator.generate.return_value = auth_code
+        mock_client.receive_message.side_effect = [
+            tuple([public_key, guest]),
+            tuple([auth_code, guest]),
+        ]
+        member = Member(auth_code, ip_address, port)
+        community_id = "abc"
+
         add_member_use_case = AddMember(
             uuid_generator, encryption_service, mock_client, member_repository
         )
 
-        uuid_generator.generate.return_value = "auth_key"
-        mock_client.receive_message.side_effect = [
-            tuple(["public_key", tuple(["127.0.0.1", 1111])]),
-            tuple(["auth_key", tuple(["127.0.0.1", 1111])]),
-        ]
+        add_member_use_case.execute(community_id, ip_address, port)
 
-        add_member_use_case.execute("abc", "127.0.0.1", 1234)
-
-        member = Member("auth_key", "127.0.0.1")
-        member_repository.add_member_to_community.assert_called_once_with("abc", member)
+        member_repository.add_member_to_community.assert_called_once_with(
+            community_id, member
+        )
 
     @mock.patch(
         "src.application.interfaces.iasymetric_encryption_service",
@@ -200,16 +220,21 @@ class TestAddMember:
         member_repository: MagicMock,
     ):
         """method to test add member to community"""
+        ip_address = "127.0.0.1"
+        port = 1024
+        guest = tuple(["127.0.0.1", 1111])
+        auth_code = "auth_code"
+        public_key = "public_key"
+        uuid_generator.generate.return_value = auth_code
+        mock_client.receive_message.side_effect = [
+            tuple([public_key, guest]),
+            tuple([auth_code, guest]),
+        ]
+
         add_member_use_case = AddMember(
             uuid_generator, encryption_service, mock_client, member_repository
         )
 
-        uuid_generator.generate.return_value = "auth_key"
-        mock_client.receive_message.side_effect = [
-            tuple(["public_key", tuple(["127.0.0.1", 1111])]),
-            tuple(["auth_key", tuple(["127.0.0.1", 1111])]),
-        ]
-
-        add_member_use_case.execute("abc", "127.0.0.1", 1234)
+        add_member_use_case.execute("abc", ip_address, port)
 
         mock_client.close_connection.assert_called_once()

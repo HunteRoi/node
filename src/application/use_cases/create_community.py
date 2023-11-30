@@ -12,13 +12,15 @@ from src.domain.entities.member import Member
 class CreateCommunity(ICreateCommunity):
     """Class to create a community"""
 
-    def __init__(self,
-                 community_repository: ICommunityRepository,
-                 member_repository: IMemberRepository,
-                 idea_repository: IIdeaRepository,
-                 opinion_repository: IOpinionRepository,
-                 id_generator_service: IIdGeneratorService,
-                 machine_service: IMachineService):
+    def __init__(
+        self,
+        community_repository: ICommunityRepository,
+        member_repository: IMemberRepository,
+        idea_repository: IIdeaRepository,
+        opinion_repository: IOpinionRepository,
+        id_generator_service: IIdGeneratorService,
+        machine_service: IMachineService,
+    ):
         self.community_repository = community_repository
         self.member_repository = member_repository
         self.idea_repository = idea_repository
@@ -27,25 +29,16 @@ class CreateCommunity(ICreateCommunity):
         self.machine_service = machine_service
 
     def execute(self, name: str, description: str):
-        community = Community(
-            self.id_generator_service.generate(),
-            name,
-            description
-        )
+        community = Community(self.id_generator_service.generate(), name, description)
         member = Member(
             self.machine_service.get_auth_key(None),
-            self.machine_service.get_ip_address()
+            self.machine_service.get_ip_address(),
+            self.machine_service.get_port(),
         )
         community.add_member(member)
 
-        self.community_repository.add_community(
-            community,
-            member.authentication_key
-        )
+        self.community_repository.add_community(community, member.authentication_key)
         self.member_repository.initialize_if_not_exists(community.identifier)
-        self.member_repository.add_member_to_community(
-            community.identifier,
-            member
-        )
+        self.member_repository.add_member_to_community(community.identifier, member)
         self.idea_repository.initialize_if_not_exists(community.identifier)
         self.opinion_repository.initialize_if_not_exists(community.identifier)

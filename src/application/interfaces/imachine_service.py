@@ -11,3 +11,7 @@ class IMachineService(ABC):
     @abstractmethod
     def get_auth_key(self, community_id: int | None) -> str:
         """Gets the machine's authentication key"""
+
+    @abstractmethod
+    def get_port(self) -> int:
+        """Gets the machine's port"""

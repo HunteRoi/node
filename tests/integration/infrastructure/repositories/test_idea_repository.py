@@ -11,16 +11,22 @@ class TestIdeaRrepository:
     """Test suite for the IdeaRepository class"""
 
     @pytest.fixture(scope="function", autouse=True, name="temp_folder")
-    def create_temporary_testfolder(self, tmp_path_factory: pytest.TempPathFactory) -> str:
+    def create_temporary_testfolder(
+        self, tmp_path_factory: pytest.TempPathFactory
+    ) -> str:
         """Create a temporary folder for the test."""
         base_path = "test_idea_repository"
         return str(tmp_path_factory.mktemp(base_path, True))
 
-    def test_add_idea_to_community(self, temp_folder):
+    @pytest.fixture(scope="function", autouse=True, name="author")
+    def fixture_member(self):
+        """Fixture for the author of the idea."""
+        return Member("1234", "name", 1024)
+
+    def test_add_idea_to_community(self, author, temp_folder):
         """Validates that it is possible to add an idea to a community"""
         community_id = "1234"
-        member = Member("abc", "127.0.0.1")
-        idea = Idea(1, "An idea", member, datetime.now())
+        idea = Idea(1, "An idea", author, datetime.now())
 
         repository = IdeaRepository(temp_folder)
 
@@ -28,12 +34,11 @@ class TestIdeaRrepository:
 
         assert os.path.exists(f"{temp_folder}/{community_id}.sqlite")
 
-    def test_get_ideas_by_community(self, temp_folder):
+    def test_get_ideas_by_community(self, author, temp_folder):
         """Validates that it is possible to get ideas by community"""
         community_id = "1234"
-        member = Member("abc", "127.0.0.1")
-        idea = Idea(1, "A first idea", member, datetime.now())
-        idea2 = Idea(2, "A second idea", member, datetime.now())
+        idea = Idea(1, "A first idea", author, datetime.now())
+        idea2 = Idea(2, "A second idea", author, datetime.now())
 
         repository = IdeaRepository(temp_folder)
 

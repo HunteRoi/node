@@ -3,7 +3,9 @@ import pytest
 
 from src.domain.entities.member import Member
 from src.infrastructure.repositories.member_repository import MemberRepository
-from src.application.exceptions.member_already_exists_error import MemberAlreadyExistsError
+from src.application.exceptions.member_already_exists_error import (
+    MemberAlreadyExistsError,
+)
 
 
 class TestMemberRepository:
@@ -12,11 +14,13 @@ class TestMemberRepository:
     @pytest.fixture(scope="function", autouse=True, name="member")
     def create_member(self) -> Member:
         """Create a community for the test."""
-        member = Member("abc", "127.0.0.1")
+        member = Member("abc", "127.0.0.1", 1024)
         return member
 
     @pytest.fixture(scope="function", autouse=True, name="temp_folder")
-    def create_temporary_testfolder(self, tmp_path_factory: pytest.TempPathFactory) -> str:
+    def create_temporary_testfolder(
+        self, tmp_path_factory: pytest.TempPathFactory
+    ) -> str:
         """Create a temporary folder for the test."""
         base_path = "test_community_repository"
         return str(tmp_path_factory.mktemp(base_path, True))
@@ -44,10 +48,7 @@ class TestMemberRepository:
         authentication_key = "abc"
         repository = MemberRepository(temp_folder)
 
-        member = repository.get_member_for_community(
-            community_id,
-            authentication_key
-        )
+        member = repository.get_member_for_community(community_id, authentication_key)
 
         assert member is None
 
@@ -55,13 +56,10 @@ class TestMemberRepository:
         """Validates that it is possible to get a member of a specific community"""
         community_id = "1234"
         authentication_key = "abc"
-        member = Member(authentication_key, "127.0.0.1")
+        member = Member(authentication_key, "127.0.0.1", 1024)
         repository = MemberRepository(temp_folder)
         repository.add_member_to_community(community_id, member)
 
-        member = repository.get_member_for_community(
-            community_id,
-            authentication_key
-        )
+        member = repository.get_member_for_community(community_id, authentication_key)
 
         assert member.authentication_key == authentication_key

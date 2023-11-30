@@ -10,8 +10,9 @@ class TestMachineService:
     @mock.patch("socket.socket", name="socket")
     @mock.patch("src.application.interfaces.icommunity_repository", name="repository")
     @mock.patch("src.application.interfaces.iid_generator_service", name="id_generator")
-    def test_get_ip_address_exists(self, socket: MagicMock, repository: MagicMock,
-                                   id_generator: MagicMock):
+    def test_get_ip_address_exists(
+        self, socket: MagicMock, repository: MagicMock, id_generator: MagicMock
+    ):
         """Test that the get_ip_address method exists."""
         service = MachineService(repository, id_generator)
 
@@ -24,8 +25,12 @@ class TestMachineService:
     @mock.patch("socket.gethostbyname", name="socket", return_value="127.0.0.1")
     @mock.patch("src.application.interfaces.icommunity_repository", name="repository")
     @mock.patch("src.application.interfaces.iid_generator_service", name="id_generator")
-    def test_get_ip_address(self, socket: MagicMock, repository: MagicMock,  # pylint: disable=unused-argument
-                            id_generator: MagicMock):
+    def test_get_ip_address(
+        self,
+        socket: MagicMock,
+        repository: MagicMock,  # pylint: disable=unused-argument
+        id_generator: MagicMock,
+    ):
         """Test getting the IP address."""
         service = MachineService(repository, id_generator)
 
@@ -46,7 +51,9 @@ class TestMachineService:
 
     @mock.patch("src.application.interfaces.icommunity_repository", name="repository")
     @mock.patch("src.application.interfaces.iid_generator_service", name="id_generator")
-    def test_get_auth_key_with_community(self, repository: MagicMock, id_generator: MagicMock):
+    def test_get_auth_key_with_community(
+        self, repository: MagicMock, id_generator: MagicMock
+    ):
         """Test getting the authentication key."""
         service = MachineService(repository, id_generator)
         repository.get_authentication_key_for_community.return_value = "abc"
@@ -57,8 +64,9 @@ class TestMachineService:
 
     @mock.patch("src.application.interfaces.icommunity_repository", name="repository")
     @mock.patch("src.application.interfaces.iid_generator_service", name="id_generator")
-    def test_get_auth_key_without_community_exists(self, repository: MagicMock,
-                                                   id_generator: MagicMock):
+    def test_get_auth_key_without_community_exists(
+        self, repository: MagicMock, id_generator: MagicMock
+    ):
         """Test getting the authentication key."""
         service = MachineService(repository, id_generator)
         id_generator.generate.return_value = "abc"
@@ -69,7 +77,9 @@ class TestMachineService:
 
     @mock.patch("src.application.interfaces.icommunity_repository", name="repository")
     @mock.patch("src.application.interfaces.iid_generator_service", name="id_generator")
-    def test_get_auth_key_without_community(self, repository: MagicMock, id_generator: MagicMock):
+    def test_get_auth_key_without_community(
+        self, repository: MagicMock, id_generator: MagicMock
+    ):
         """Test getting the authentication key."""
         service = MachineService(repository, id_generator)
         id_generator.generate.return_value = "abc"
@@ -77,3 +87,13 @@ class TestMachineService:
         auth_key_found = service.get_auth_key(None)
 
         assert auth_key_found == "abc"
+
+    @mock.patch("src.application.interfaces.icommunity_repository", name="repository")
+    @mock.patch("src.application.interfaces.iid_generator_service", name="id_generator")
+    def test_get_port_exists(self, repository: MagicMock, id_generator: MagicMock):
+        """Validates that getting an available port on the machine is possible."""
+        service = MachineService(repository, id_generator)
+
+        port = service.get_port()
+
+        assert port is not None

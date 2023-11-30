@@ -8,7 +8,11 @@ from src.application.interfaces.iid_generator_service import IIdGeneratorService
 class MachineService(IMachineService):
     """Class to get machine information"""
 
-    def __init__(self, repository: ICommunityRepository, id_generator_service: IIdGeneratorService):
+    def __init__(
+        self,
+        repository: ICommunityRepository,
+        id_generator_service: IIdGeneratorService,
+    ):
         self.repository = repository
         self.id_generator_service = id_generator_service
 
@@ -19,3 +23,6 @@ class MachineService(IMachineService):
         if community_id is None:
             return self.id_generator_service.generate()
         return self.repository.get_authentication_key_for_community(community_id)
+
+    def get_port(self) -> int:
+        return 0
