@@ -5,18 +5,22 @@ from src.presentation.views.generics.submenu import SubMenu
 from src.domain.entities.community import Community
 from src.application.interfaces.iadd_member import IAddMember
 from src.application.interfaces.iread_communities import IReadCommunities
-from src.application.interfaces.iread_ideas_from_community import IReadIdeasFromCommunity
+from src.application.interfaces.iread_ideas_from_community import (
+    IReadIdeasFromCommunity,
+)
 from src.application.interfaces.iread_opinions import IReadOpinions
 
 
 class SelectCommunityMenu(SubMenu):
     """The menu that displays the communities of the node."""
 
-    def __init__(self,
-                 add_member_usecase: IAddMember,
-                 read_communities_usecase: IReadCommunities,
-                 read_ideas_from_community_usecase: IReadIdeasFromCommunity,
-                 read_opinions_usecase: IReadOpinions):
+    def __init__(
+        self,
+        add_member_usecase: IAddMember,
+        read_communities_usecase: IReadCommunities,
+        read_ideas_from_community_usecase: IReadIdeasFromCommunity,
+        read_opinions_usecase: IReadOpinions,
+    ):
         super().__init__("Sélectionnez une communauté")
 
         self.add_member_usecase = add_member_usecase
@@ -41,11 +45,7 @@ class SelectCommunityMenu(SubMenu):
             self.add_member_usecase,
             self.read_ideas_from_community_usecase,
             self.read_ideas_from_community_usecase,
-            self.read_opinions_usecase
+            self.read_opinions_usecase,
         )
-        community_item = SubmenuItem(
-            community.name,
-            submenu,
-            self
-        )
+        community_item = SubmenuItem(community.name, submenu, self)
         self.append_item(community_item)

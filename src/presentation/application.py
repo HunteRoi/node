@@ -112,6 +112,12 @@ class Application:
             Application.client_socket,
             Application.member_repository,
         )
+        Application.add_member_usecase = AddMember(
+            Application.id_generator,
+            Application.asymetric_encryption_service,
+            Application.client_socket,
+            Application.member_repository,
+        )
         Application.read_communities_usecase = ReadCommunities(
             Application.community_repository
         )
