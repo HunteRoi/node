@@ -10,10 +10,12 @@ from src.application.interfaces.iread_opinions import IReadOpinions
 class ReadOpinionsMenu(SubMenu):
     """The menu that displays the opinions of an idea or an opinion."""
 
-    def __init__(self,
-                 community: Community,
-                 parent_: Idea | Opinion,
-                 read_opinions_usecase: IReadOpinions):
+    def __init__(
+        self,
+        community: Community,
+        parent_: Idea | Opinion,
+        read_opinions_usecase: IReadOpinions,
+    ):
         super().__init__(self._get_menu_title(parent_))
 
         # self.parent is inherited from ConsoleMenu which means
@@ -25,16 +27,16 @@ class ReadOpinionsMenu(SubMenu):
 
     def _get_menu_title(self, parent_: Idea | Opinion) -> str:
         """Builds the menu title"""
-        return f"Les prises de position de {"l'idée" if isinstance(parent_, Idea) \
-            else "la prise de position"} \"{parent_.content}\""
+        title = "l'idée" if isinstance(parent_, Idea) else "la prise de position"
+        name = '"' + parent_.content + '"'
+        return f"Les prises de position de {title} {name}"
 
     def start(self, show_exit_option: bool | None = None):
         """Creates the menu with the opinions and shows it"""
         self.items.clear()
 
         opinions = self.read_opinions_usecase.execute(
-            self.community.identifier,
-            self.parent_.identifier
+            self.community.identifier, self.parent_.identifier
         )
         for opinion in opinions:
             self._add_opinion_item(opinion)
@@ -43,12 +45,6 @@ class ReadOpinionsMenu(SubMenu):
 
     def _add_opinion_item(self, opinion: Opinion):
         """Adds an opinion item to the menu"""
-        submenu = ReadOpinionsMenu(self.community,
-                                   opinion,
-                                   self.read_opinions_usecase)
-        item = SubmenuItem(
-            opinion.content,
-            submenu,
-            self
-        )
+        submenu = ReadOpinionsMenu(self.community, opinion, self.read_opinions_usecase)
+        item = SubmenuItem(opinion.content, submenu, self)
         self.append_item(item)
