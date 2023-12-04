@@ -11,7 +11,9 @@ class ICommunityRepository(ABC):
         """Initialize the requirements"""
 
     @abstractmethod
-    def add_community(self, community: Community, member_auth_key: str) -> None:
+    def add_community(
+        self, community: Community, member_auth_key: str, encryption_key_path: str
+    ) -> None:
         """Add a community to the repository"""
 
     @abstractmethod
@@ -25,3 +27,7 @@ class ICommunityRepository(ABC):
     @abstractmethod
     def get_authentication_key_for_community(self, community_id: str) -> str:
         """Get the authentication key of the current member of the community"""
+
+    @abstractmethod
+    def get_community_encryption_key_path(self, community_id: str) -> str:
+        """Get the path of the file containing community encryption key"""

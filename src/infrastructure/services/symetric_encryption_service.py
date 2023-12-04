@@ -9,10 +9,10 @@ from src.application.interfaces.isymetric_encryption_service import (
 class SymetricEncryptionService(ISymetricEncryptionService):
     """Symetric Encryption Service"""
 
-    def generate_key(self) -> str:
-        return Crypto.Random.get_random_bytes(32).decode()
+    def generate_key(self) -> bytes:
+        return Crypto.Random.get_random_bytes(32)
 
-    def encrypt(self, plaintext: str, key: str) -> tuple[str, str, str]:
+    def encrypt(self, plaintext: str, key: bytes) -> tuple[bytes, str, str]:
         if plaintext is None or plaintext.strip() == "":
             raise ValueError("Plaintext cannot be empty", plaintext)
 
@@ -26,7 +26,7 @@ class SymetricEncryptionService(ISymetricEncryptionService):
 
         return (cipher.nonce, tag, ciphertext)
 
-    def decrypt(self, ciphertext: str, key: str, tag: str, nonce: str) -> str:
+    def decrypt(self, ciphertext: str, key: bytes, tag: str, nonce: bytes) -> str:
         if ciphertext is None or ciphertext.strip() == "":
             raise ValueError("Ciphertext cannot be empty", ciphertext)
 
