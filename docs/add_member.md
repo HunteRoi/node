@@ -19,6 +19,29 @@ Au sein d'une communauté, chaque membre est identifié par un code d'authentifi
 
 ## Scénario des communications
 Le scénario des communications à réaliser afin d'inviter un nouveau membre dans une communautés a été schématisé sous forme d'[un diagramme de séquence](./add_member_usecase_sequence.mermaid).
+```mermaid
+sequenceDiagram
+    participant m as Membre
+    participant i as Invité
+
+    m ->> i: Envoie une invitation avec sa clé publique
+    i ->> m: Envoie sa clé publique
+    m ->> m: Génère le code d'authentification
+    m ->> m: Chiffre le code avec la clé publique
+    m ->> i: Envoie le code d'authentification chiffré
+    i ->> i: Déchiffre le code d'authentification avec sa clé privée
+    i ->> i: Chiffre le code déchiffré avec la clé publique du membre
+    i ->> m: Envoie le code d'authentification à nouveau chiffré
+    m ->> m: Déchiffre le code avec sa clé privée
+    alt Le code est identique
+        m ->> m: Ajoute le membre à la communauté
+        m ->> m: Chiffre la clé symétrique de la communauté avec la clé publique de l'invité
+        m ->> i: Envoie une confirmation avec la clé symétrique de la communauté chiffrée
+        i ->> i: Déchiffre la clé symétrique de la communauté avec sa clé privée
+    else Le code n'est pas identique
+        m ->> i: Envoie une infirmation
+    end
+```
 
 ## Implémentation de la couche présentation
 Lors de ce développement, une modification dans l'organisation des menus a été apportée. Auparavant, dans le menu principal, l'utilisateur avait le choix de consulter le contenu d'une communauté. Désormais, ce choix est remplacé par l'option de se connecter à une communauté. Cette dernière permet à l'utilisateur de choisir à quelle communauté il veut se connecter. Lorsqu'il en choisit une, il a le choix de consulter les idées et les prises de position de cette communauté ou d'ajouter un nouveau membre. S'il choisit d'ajouter un nouveau membre, il doit entrer l'adresse ip et le port de contact de la machine de l'invité.

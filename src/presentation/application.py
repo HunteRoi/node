@@ -60,6 +60,8 @@ class Application:
         """Configures the dependencies and runs the application."""
         Application._prepare()
 
+        Application.machine_service.get_asymetric_key_pair()
+
         MainMenu(
             Application.create_community_usecase,
             Application.add_member_usecase,
@@ -85,11 +87,15 @@ class Application:
         # Services
         Application.id_generator = UuidGeneratorService()
         Application.file_service = FileService()
-        Application.machine_service = MachineService(
-            Application.community_repository, Application.id_generator
-        )
         Application.asymetric_encryption_service = AsymetricEncryptionService()
         Application.symetric_encryption_service = SymetricEncryptionService()
+        Application.machine_service = MachineService(
+            base_path,
+            Application.community_repository,
+            Application.id_generator,
+            Application.asymetric_encryption_service,
+            Application.file_service,
+        )
 
         # Network
         Application.client_socket = Client()

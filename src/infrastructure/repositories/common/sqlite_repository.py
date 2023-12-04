@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 import sqlite3
 
 
@@ -8,23 +8,25 @@ class SqliteRepository(ABC):
     def __init__(self, base_path: str):
         self.base_path = base_path
 
-    def _execute_statement(self,
-                           target_database: str,
-                           statement: str,
-                           parameters: tuple = ()) -> None:
+    def _execute_statement(
+        self, target_database: str, statement: str, parameters: tuple = ()
+    ) -> None:
         """Execute a statement on the target database"""
 
-        with sqlite3.connect(f"{self.base_path}/{target_database}.sqlite") as index_connection:
+        with sqlite3.connect(
+            f"{self.base_path}/{target_database}.sqlite"
+        ) as index_connection:
             index_cursor = index_connection.cursor()
             index_cursor.execute(statement, parameters)
             index_connection.commit()
 
-    def _execute_query(self,
-                       target_database: str,
-                       statement: str,
-                       parameters: tuple = ()) -> list:
+    def _execute_query(
+        self, target_database: str, statement: str, parameters: tuple = ()
+    ) -> list:
         """Execute a query on the target database"""
-        with sqlite3.connect(f"{self.base_path}/{target_database}.sqlite") as index_connection:
+        with sqlite3.connect(
+            f"{self.base_path}/{target_database}.sqlite"
+        ) as index_connection:
             index_cursor = index_connection.cursor()
             result = index_cursor.execute(statement, parameters)
             return result.fetchall()

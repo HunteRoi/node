@@ -15,3 +15,7 @@ class IMachineService(ABC):
     @abstractmethod
     def get_port(self) -> int:
         """Gets the machine's port"""
+
+    @abstractmethod
+    def get_asymetric_key_pair(self) -> tuple[str, str]:
+        """Gets the machine's asymetric key pair"""
