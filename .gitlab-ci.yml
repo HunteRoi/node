@@ -8,10 +8,6 @@ workflow:
 stages:
   - test-n-coverage
   - deploy_coverage
-  - push_to_dockerhub
-
-variables:
-  DOCKER_IMAGE_NAME: "$DOCKER_HUB_USERNAME/$CI_PROJECT_NAME"
 
 image: python:latest
 
@@ -37,18 +33,6 @@ test_job:
         path: coverage/cov.xml
     paths:
       - coverage/html
-
-deploy:
-  stage: push_to_dockerhub
-  dependencies:
-    - test_job
-  script:
-    - echo "$DOCKER_HUB_TOKEN" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
-    - docker build . -t $DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA -t $DOCKER_IMAGE_NAME:latest
-    - docker push $DOCKER_IMAGE_NAME:$CI_COMMIT_SHORT_SHA
-    - docker push $DOCKER_IMAGE_NAME:latest
-  only:
-    - main
 
 pages:
   stage: deploy_coverage
