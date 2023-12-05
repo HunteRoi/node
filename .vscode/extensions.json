@@ -18,6 +18,7 @@
         "ms-python.pylint",
         "ms-python.vscode-pylance",
         "ms-python.black-formatter",
-        "ms-python.python"
+        "ms-python.python",
+        "formulahendry.docker-extension-pack"
     ]
 }

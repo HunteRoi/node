@@ -19,15 +19,15 @@
   "python.testing.pytestArgs": ["tests"],
   "python.testing.autoTestDiscoverOnSaveEnabled": true,
   "files.exclude": {
-    "**/.git": true,
-    "**/.svn": true,
-    "**/.hg": true,
-    "**/CVS": true,
-    "**/.DS_Store": true,
-    "**/Thumbs.db": true,
-    "**/__init__.py": true,
-    "**/.pytest_cache": true,
-    "**/__pycache__": true
+    "**/.git": false,
+    "**/.svn": false,
+    "**/.hg": false,
+    "**/CVS": false,
+    "**/.DS_Store": false,
+    "**/Thumbs.db": false,
+    "**/__init__.py": false,
+    "**/.pytest_cache": false,
+    "**/__pycache__": false
   },
   "explorerExclude.backup": {}
 }
