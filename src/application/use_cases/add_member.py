@@ -45,19 +45,24 @@ class AddMember(IAddMember):
             self.private_key,
         ) = self.machine_service.get_asymetric_key_pair()
 
-        self._connect_to_guest(ip_address, port)
-
-        self.guest_public_key = self._send_invitation()
-
+        error_message = "Failure!"
         try:
+            self._connect_to_guest(ip_address, port)
+
+            self.guest_public_key = self._send_invitation()
+
             auth_key = self._send_auth_key()
 
             self._add_member_to_community(community_id, auth_key, ip_address, port)
 
             self._send_community_symetric_key(community_id)
+
+            return "Success!"
         except AuthentificationFailedError as error:
             self._send_reject_message(error.inner_error)
-            raise error
+            return error_message
+        except:
+            return error_message
         finally:
             self._close_connection()
 
@@ -104,7 +109,9 @@ class AddMember(IAddMember):
         symetric_key_path = self.community_repository.get_community_encryption_key_path(
             community_id
         )
-        symetric_key = self.file_service.read_file(symetric_key_path, with_binary_format=True)
+        symetric_key = self.file_service.read_file(
+            symetric_key_path, with_binary_format=True
+        )
 
         encrypted_symetric_key = self.encryption_service.encrypt(
             symetric_key, self.guest_public_key

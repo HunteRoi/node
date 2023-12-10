@@ -142,8 +142,11 @@ class TestAddMember:
         """Method to test that the received auth key is the same as the generated one"""
         add_member_usecase.encryption_service.decrypt.return_value = "other_auth_code"
 
-        with pytest.raises(AuthentificationFailedError):
-            add_member_usecase.execute("abc", "127.0.0.1", 1234)
+        add_member_usecase.execute("abc", "127.0.0.1", 1234)
+
+        add_member_usecase.client_socket.send_message.assert_any_call(
+            "REJECT|Authentification key not valid"
+        )
 
     def test_add_member_to_community(
         self,
@@ -211,8 +214,7 @@ class TestAddMember:
         """Method to test that the reject message is sent to the guest"""
         add_member_usecase.encryption_service.decrypt.return_value = "other_auth_code"
 
-        with pytest.raises(AuthentificationFailedError):
-            add_member_usecase.execute("abc", "127.0.0.1", 1234)
+        add_member_usecase.execute("abc", "127.0.0.1", 1234)
 
         add_member_usecase.client_socket.send_message.assert_any_call(
             "REJECT|Authentification key not valid"
@@ -226,3 +228,11 @@ class TestAddMember:
         add_member_usecase.execute("abc", "127.0.0.1", 1234)
 
         add_member_usecase.client_socket.close_connection.assert_called_once()
+
+    def test_add_member_connection_failed(self, add_member_usecase: AddMember):
+        """Method to test that the connection with the guest is closed"""
+        add_member_usecase.client_socket.connect_to_server.side_effect = Exception()
+
+        message = add_member_usecase.execute("abc", "127.0.0.1", 1234)
+
+        assert message == "Failure!"
