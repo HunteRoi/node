@@ -7,6 +7,7 @@ from src.application.interfaces.iasymetric_encryption_service import (
     IAsymetricEncryptionService,
 )
 from src.application.interfaces.ifile_service import IFileService
+from src.domain.entities.member import Member
 
 
 class MachineService(IMachineService):
@@ -29,7 +30,7 @@ class MachineService(IMachineService):
     def get_ip_address(self) -> str:
         return socket.gethostbyname(socket.gethostname())
 
-    def get_auth_key(self, community_id: int | None) -> str:
+    def get_auth_key(self, community_id: int | None = None) -> str:
         if community_id is None:
             return self.id_generator_service.generate()
         return self.community_repository.get_authentication_key_for_community(
@@ -51,3 +52,10 @@ class MachineService(IMachineService):
 
     def get_port(self) -> int:
         return 0
+
+    def get_current_user(self, community_id: str | None = None) -> Member:
+        return Member(
+            self.get_auth_key(community_id),
+            self.get_ip_address(),
+            self.get_port(),
+        )

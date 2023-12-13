@@ -51,11 +51,7 @@ class CreateCommunity(ICreateCommunity):
         self._initialize_community_database(community.identifier, member)
 
     def _create_member(self) -> Member:
-        return Member(
-            self.machine_service.get_auth_key(None),
-            self.machine_service.get_ip_address(),
-            self.machine_service.get_port(),
-        )
+        return self.machine_service.get_current_user()
 
     def _create_community(
         self, name: str, description: str, member: Member

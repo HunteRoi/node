@@ -181,3 +181,70 @@ class TestMachineService:
         port = machine_service.get_port()
 
         assert port is not None
+
+    @pytest.mark.parametrize("community_id", ["1234", None])
+    def test_get_current_user(
+        self, machine_service: MachineService, community_id: str | None
+    ):
+        """Test getting the current user."""
+
+        user = machine_service.get_current_user(community_id)
+
+        assert user is not None
+
+    @pytest.mark.parametrize("community_id", ["1234", None])
+    @mock.patch(
+        "src.infrastructure.services.machine_service",
+        name="get_auth_key_mock",
+        return_value="auth_key",
+    )
+    def test_get_current_user_auth_key(
+        self,
+        get_auth_key_mock: MagicMock,
+        machine_service: MachineService,
+        community_id: str | None,
+    ):
+        """Test getting the current user."""
+        machine_service.get_auth_key = get_auth_key_mock
+
+        user = machine_service.get_current_user(community_id)
+
+        assert user.authentication_key == get_auth_key_mock.return_value
+
+    @pytest.mark.parametrize("community_id", ["1234", None])
+    @mock.patch(
+        "src.infrastructure.services.machine_service",
+        name="get_ip_address_mock",
+        return_value="127.0.0.1",
+    )
+    def test_get_current_user_ip_address(
+        self,
+        get_ip_address_mock: MagicMock,
+        machine_service: MachineService,
+        community_id: str | None,
+    ):
+        """Test getting the current user."""
+        machine_service.get_ip_address = get_ip_address_mock
+
+        user = machine_service.get_current_user(community_id)
+
+        assert user.ip_address == get_ip_address_mock.return_value
+
+    @pytest.mark.parametrize("community_id", ["1234", None])
+    @mock.patch(
+        "src.infrastructure.services.machine_service",
+        name="get_port_mock",
+        return_value=1234,
+    )
+    def test_get_current_user_port(
+        self,
+        get_port_mock: MagicMock,
+        machine_service: MachineService,
+        community_id: str | None,
+    ):
+        """Test getting the current user."""
+        machine_service.get_port = get_port_mock
+
+        user = machine_service.get_current_user(community_id)
+
+        assert user.port == get_port_mock.return_value

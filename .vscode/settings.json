@@ -5,7 +5,7 @@
   },
   "python.terminal.activateEnvironment": true,
   "python.languageServer": "Pylance",
-  "python.analysis.extraPaths": ["./src", "./tests"],
+  "python.analysis.extraPaths": ["./"],
   "python.analysis.autoSearchPaths": true,
   "python.analysis.autoFormatStrings": true,
   "python.analysis.autoImportCompletions": true,
