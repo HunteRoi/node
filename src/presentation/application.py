@@ -5,6 +5,7 @@ from src.infrastructure.repositories.community_repository import CommunityReposi
 from src.infrastructure.repositories.member_repository import MemberRepository
 from src.infrastructure.repositories.idea_repository import IdeaRepository
 from src.infrastructure.repositories.opinion_repository import OpinionRepository
+from src.infrastructure.services.ntp_datetime_service import NtpDatetimeService
 from src.infrastructure.services.uuid_generator_service import UuidGeneratorService
 from src.infrastructure.services.machine_service import MachineService
 from src.infrastructure.services.asymetric_encryption_service import (
@@ -41,6 +42,7 @@ class Application:
         self.idea_repository = IdeaRepository(base_path)
         self.opinion_repository = OpinionRepository(base_path)
 
+        self.datetime_service = NtpDatetimeService()
         self.id_generator = UuidGeneratorService()
         self.file_service = FileService()
         self.asymetric_encryption_service = AsymetricEncryptionService()
@@ -71,6 +73,7 @@ class Application:
             self.file_service,
             self.community_repository,
             self.member_repository,
+            self.datetime_service,
         )
         self.join_community_usecase = JoinCommunity(
             self.asymetric_encryption_service, self.machine_service

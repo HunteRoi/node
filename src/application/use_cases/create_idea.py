@@ -1,5 +1,4 @@
 from datetime import datetime
-from src.application.interfaces import iidea_repository
 
 from src.application.interfaces.icreate_idea import ICreateIdea
 from src.application.interfaces.iid_generator_service import IIdGeneratorService

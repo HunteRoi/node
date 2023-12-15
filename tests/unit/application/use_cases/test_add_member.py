@@ -11,6 +11,7 @@ class TestAddMember:
     """Test add member to a community"""
 
     @pytest.fixture(scope="function", autouse=True, name="add_member_usecase")
+    @mock.patch("src.application.interfaces.idatetime_service", name="datetime_service")
     @mock.patch(
         "src.application.interfaces.imember_repository", name="member_repository"
     )
@@ -34,6 +35,7 @@ class TestAddMember:
         file_service: MagicMock,
         community_repository: MagicMock,
         member_repository: MagicMock,
+        datetime_service: MagicMock,
     ) -> AddMember:
         """Create a use case for adding a member to a community."""
         uuid_generator.generate.return_value = "auth_code"
@@ -57,6 +59,7 @@ class TestAddMember:
             file_service,
             community_repository,
             member_repository,
+            datetime_service,
         )
 
     @mock.patch("src.presentation.network.client.Client", name="mock_client")

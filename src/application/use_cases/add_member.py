@@ -1,6 +1,7 @@
 from time import sleep
 
 from src.domain.entities.member import Member
+from src.application.interfaces.idatetime_service import IDatetimeService
 from src.application.exceptions.authentification_failed_error import (
     AuthentificationFailedError,
 )
@@ -28,6 +29,7 @@ class AddMember(IAddMember):
         file_service: IFileService,
         community_repository: ICommunityRepository,
         member_repository: IMemberRepository,
+        datetime_service: IDatetimeService,
     ):
         self.encryption_service = encryption_service
         self.uuid_generator = uuid_generator
@@ -35,6 +37,7 @@ class AddMember(IAddMember):
         self.file_service = file_service
         self.community_repository = community_repository
         self.member_repository = member_repository
+        self.datetime_service = datetime_service
 
         self.public_key: str
         self.private_key: str
@@ -125,7 +128,9 @@ class AddMember(IAddMember):
         self, community_id: str, auth_key: str, ip_address: str, port: int
     ):
         """Add the member to the community"""
-        member = Member(auth_key, ip_address, port)
+        member = Member(
+            auth_key, ip_address, port, self.datetime_service.get_datetime()
+        )
         print("Adding member to community")
         self.member_repository.add_member_to_community(community_id, member)
 
