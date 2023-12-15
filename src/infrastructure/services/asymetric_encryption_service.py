@@ -28,8 +28,7 @@ class AsymetricEncryptionService(IAsymetricEncryptionService):
         key = self._convert_to_key(public_key, "public")
         plaintext_bytes = plaintext.encode()
 
-        ciphertext = rsa.pkcs1.encrypt(plaintext_bytes, key)
-        return ciphertext.decode()
+        return rsa.pkcs1.encrypt(plaintext_bytes, key).hex()
 
     def decrypt(self, ciphertext: str, private_key: str) -> str:
         if ciphertext is None or ciphertext.strip() == "":
@@ -39,7 +38,7 @@ class AsymetricEncryptionService(IAsymetricEncryptionService):
             raise ValueError("Private key cannot be empty", private_key)
 
         key = self._convert_to_key(private_key, "private")
-        ciphertext_bytes = ciphertext.encode()
+        ciphertext_bytes = bytes.fromhex(ciphertext)
 
         return rsa.pkcs1.decrypt(ciphertext_bytes, key).decode()
 

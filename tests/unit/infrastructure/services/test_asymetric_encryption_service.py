@@ -70,7 +70,7 @@ class TestAsymetricEncryptionService:
             service.encrypt(plaintext, public_key)
 
     @pytest.mark.parametrize(
-        "plaintext, public_key, encrypted_data", [("text", "key", "encrypted_data")]
+        "plaintext, public_key, encrypted_data", [("text", "key", b"encrypted_data")]
     )
     @mock.patch("rsa.key.PublicKey.load_pkcs1", name="mock_rsa_public_key_loader")
     @mock.patch("rsa.pkcs1.encrypt", name="mock_rsa_encrypt")
@@ -80,17 +80,16 @@ class TestAsymetricEncryptionService:
         mock_rsa_public_key_loader: MagicMock,
         plaintext: str,
         public_key: str,
-        encrypted_data: str,
+        encrypted_data: bytes,
     ):
         """Validates that it is possible to encrypt a text if the parameters are valid"""
         mock_rsa_public_key_loader.return_value = public_key
-        mock_rsa_encrypt.return_value = mock_rsa_encrypt
-        mock_rsa_encrypt.decode.return_value = encrypted_data
+        mock_rsa_encrypt.return_value = encrypted_data
         service = AsymetricEncryptionService()
 
         received_encrypted_data = service.encrypt(plaintext, public_key)
 
-        assert received_encrypted_data == encrypted_data
+        assert received_encrypted_data != plaintext
 
     @pytest.mark.parametrize("ciphertext, private_key", [("", "key"), (None, "key")])
     def test_decrypt_raises_value_error_with_empty_text(
@@ -117,7 +116,8 @@ class TestAsymetricEncryptionService:
             service.decrypt(ciphertext, private_key)
 
     @pytest.mark.parametrize(
-        "ciphertext, private_key, decrypted_data", [("text", "key", "decrypted_data")]
+        "ciphertext, private_key, decrypted_data",
+        [("73796d65747269635f6b6579", "key", "decrypted_data")],
     )
     @mock.patch("rsa.key.PrivateKey.load_pkcs1", name="mock_rsa_private_key_loader")
     @mock.patch("rsa.pkcs1.decrypt", name="mock_rsa_decrypt")

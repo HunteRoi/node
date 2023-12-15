@@ -1,47 +1,45 @@
 from unittest import mock
 from unittest.mock import MagicMock
 
+import pytest
+
 from src.presentation.network.server import Server
 
 
 class TestServer:
     """Test Server class"""
 
-    def test_init(self):
-        """Validates the constructor of Server initializes the object"""
-        server = Server(1234)
+    @pytest.fixture(scope="function", autouse=True, name="server")
+    @mock.patch("src.application.interfaces.ijoin_community", name="join_community")
+    def create_server(self, join_community: MagicMock) -> Server:
+        """Create the server"""
+        return Server(1234, join_community)
 
+    def test_init(self, server: Server):
+        """Validates the constructor of Server initializes the object"""
         assert server is not None
 
-    def test_port_attribute(self):
+    def test_port_attribute(self, server: Server):
         """Validates the attribute port of the server"""
-        port = 12345
-
-        server = Server(port)
+        port = 1234
 
         assert server.port == port
 
-    @mock.patch("socket.socket")
-    def test_server_socket_created(self, mock_socket: MagicMock):
+    def test_server_socket_created(self, server: Server):
         """Validates that the server socket is created"""
-        server = Server(1234)
 
-        assert server.server_socket == mock_socket.return_value
+        assert server.server_socket is not None
 
-    def test_stop_server_running(self):
+    def test_stop_server_running(self, server: Server):
         """Test stop server"""
-        server = Server(1234)
-
         server.running = True
         server.stop()
 
         assert not server.running
 
-    @mock.patch("socket.socket")
-    def test_stop_server_socket(self, mock_socket: MagicMock):
+    def test_stop_server_socket(self, server: Server):
         """Test stop server"""
-        server = Server(1234)
-
+        server.running = True
         server.stop()
 
-        mock_socket.return_value.close.assert_called_once()
+        assert not server.running

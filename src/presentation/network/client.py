@@ -12,8 +12,7 @@ class Client(IClientSocket):
             if client_socket is not None:
                 self.client_socket = client_socket
             else:
-                self.client_socket = socket.socket(
-                    socket.AF_INET, socket.SOCK_STREAM)
+                self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         except socket.error as err:
             raise SocketError(f"Unable to create socket :{err}") from err
 
@@ -23,7 +22,9 @@ class Client(IClientSocket):
         except socket.error as err:
             raise SocketError(f"Unable to connect to server :{err}") from err
 
-    def send_message(self, message: str, ip_adress: str | None = None, port: int | None = None):
+    def send_message(
+        self, message: str, ip_adress: str | None = None, port: int | None = None
+    ):
         try:
             if ip_adress is not None and port is not None:
                 self.client_socket.sendto(message.encode(), (ip_adress, port))
@@ -34,7 +35,7 @@ class Client(IClientSocket):
 
     def receive_message(self) -> tuple[str, tuple[str, int]]:
         message, sender = self.client_socket.recvfrom(2048)
-        decoded_message = message.decode('utf-8')
+        decoded_message = message.decode()
         return decoded_message, sender
 
     def close_connection(self):

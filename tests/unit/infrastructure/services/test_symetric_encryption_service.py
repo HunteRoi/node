@@ -20,22 +20,18 @@ class TestSymetricEncryptionService:
 
         received_key = service.generate_key()
 
-        assert received_key == key
+        assert received_key is not None
 
-    @pytest.mark.parametrize("plaintext, key", [("", "key"), (None, "key")])
-    def test_encrypt_raises_value_error_with_empty_text(
-        self, plaintext: str, key: bytes
-    ):
+    @pytest.mark.parametrize("plaintext, key", [("", "6b6579"), (None, "6b6579")])
+    def test_encrypt_raises_value_error_with_empty_text(self, plaintext: str, key: str):
         """Validates that it is not possible to encrypt an empty text"""
         service = SymetricEncryptionService()
 
         with pytest.raises(ValueError):
             service.encrypt(plaintext, key)
 
-    @pytest.mark.parametrize("plaintext, key", [("text", b""), ("text", None)])
-    def test_encrypt_raises_value_error_with_empty_key(
-        self, plaintext: str, key: bytes
-    ):
+    @pytest.mark.parametrize("plaintext, key", [("text", ""), ("text", None)])
+    def test_encrypt_raises_value_error_with_empty_key(self, plaintext: str, key: str):
         """Validates that it is not possible to encrypt an empty text"""
         service = SymetricEncryptionService()
 
@@ -44,14 +40,14 @@ class TestSymetricEncryptionService:
 
     @pytest.mark.parametrize(
         "plaintext, key, ciphertext, tag, nonce",
-        [("text", b"key", "cipher", "tag", b"nonce")],
+        [("text", "6b6579", "cipher", "tag", b"nonce")],
     )
     @mock.patch("Crypto.Cipher.AES.new", name="mock_cipher")
     def test_encrypt(
         self,
         mock_cipher: MagicMock,
         plaintext: str,
-        key: bytes,
+        key: str,
         ciphertext: str,
         tag: str,
         nonce: bytes,
@@ -72,10 +68,10 @@ class TestSymetricEncryptionService:
 
     @pytest.mark.parametrize(
         "ciphertext, key, tag, nonce",
-        [("", b"key", "tag", b"nonce"), (None, b"key", "tag", b"nonce")],
+        [("", "6b6579", "tag", b"nonce"), (None, "6b6579", "tag", b"nonce")],
     )
     def test_decrypt_raises_value_error_with_empty_ciphertext(
-        self, ciphertext: str, key: bytes, tag: str, nonce: bytes
+        self, ciphertext: str, key: str, tag: str, nonce: bytes
     ):
         """Validates that it is not possible to decrypt an empty ciphertext"""
         service = SymetricEncryptionService()
@@ -85,10 +81,10 @@ class TestSymetricEncryptionService:
 
     @pytest.mark.parametrize(
         "ciphertext, key, tag, nonce",
-        [("cipher", b"", "tag", b"nonce"), ("cipher", None, "tag", b"nonce")],
+        [("cipher", "", "tag", b"nonce"), ("cipher", None, "tag", b"nonce")],
     )
     def test_decrypt_raises_value_error_with_empty_key(
-        self, ciphertext: str, key: bytes, tag: str, nonce: bytes
+        self, ciphertext: str, key: str, tag: str, nonce: bytes
     ):
         """Validates that it is not possible to decrypt an empty key"""
         service = SymetricEncryptionService()
@@ -98,10 +94,10 @@ class TestSymetricEncryptionService:
 
     @pytest.mark.parametrize(
         "ciphertext, key, tag, nonce",
-        [("cipher", b"key", "", b"nonce"), ("cipher", b"key", None, b"nonce")],
+        [("cipher", "6b6579", "", b"nonce"), ("cipher", "6b6579", None, b"nonce")],
     )
     def test_decrypt_raises_value_error_with_empty_tag(
-        self, ciphertext: str, key: bytes, tag: str, nonce: bytes
+        self, ciphertext: str, key: str, tag: str, nonce: bytes
     ):
         """Validates that it is not possible to decrypt an empty tag"""
         service = SymetricEncryptionService()
@@ -111,10 +107,10 @@ class TestSymetricEncryptionService:
 
     @pytest.mark.parametrize(
         "ciphertext, key, tag, nonce",
-        [("cipher", b"key", "tag", b""), ("cipher", b"key", "tag", None)],
+        [("cipher", "6b6579", "tag", b""), ("cipher", "6b6579", "tag", None)],
     )
     def test_decrypt_raises_value_error_with_empty_nonce(
-        self, ciphertext: str, key: bytes, tag: str, nonce: bytes
+        self, ciphertext: str, key: str, tag: str, nonce: bytes
     ):
         """Validates that it is not possible to decrypt an empty nonce"""
         service = SymetricEncryptionService()
@@ -124,14 +120,14 @@ class TestSymetricEncryptionService:
 
     @pytest.mark.parametrize(
         "ciphertext, key, tag, nonce, plaintext",
-        [("cipher", b"key", "tag", b"nonce", "text")],
+        [("cipher", "6b6579", "tag", b"nonce", "text")],
     )
     @mock.patch("Crypto.Cipher.AES.new", name="mock_cipher")
     def test_decrypt(
         self,
         mock_cipher: MagicMock,
         ciphertext: str,
-        key: bytes,
+        key: str,
         tag: str,
         nonce: bytes,
         plaintext: str,

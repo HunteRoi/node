@@ -2,8 +2,9 @@ sequenceDiagram
     participant m as Membre
     participant i as Invité
 
-    m ->> i: Envoie une invitation avec sa clé publique
+    m ->> i: Envoie une invitation
     i ->> m: Envoie sa clé publique
+    m ->> i: Envoie sa clé publique
     m ->> m: Génère le code d'authentification
     m ->> m: Chiffre le code avec la clé publique
     m ->> i: Envoie le code d'authentification chiffré

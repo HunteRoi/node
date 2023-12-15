@@ -24,8 +24,9 @@ sequenceDiagram
     participant m as Membre
     participant i as Invité
 
-    m ->> i: Envoie une invitation avec sa clé publique
+    m ->> i: Envoie une invitation
     i ->> m: Envoie sa clé publique
+    m ->> i: Envoie sa clé publique
     m ->> m: Génère le code d'authentification
     m ->> m: Chiffre le code avec la clé publique
     m ->> i: Envoie le code d'authentification chiffré
@@ -44,4 +45,9 @@ sequenceDiagram
 ```
 
 ## Implémentation de la couche présentation
+### Menu
 Lors de ce développement, une modification dans l'organisation des menus a été apportée. Auparavant, dans le menu principal, l'utilisateur avait le choix de consulter le contenu d'une communauté. Désormais, ce choix est remplacé par l'option de se connecter à une communauté. Cette dernière permet à l'utilisateur de choisir à quelle communauté il veut se connecter. Lorsqu'il en choisit une, il a le choix de consulter les idées et les prises de position de cette communauté ou d'ajouter un nouveau membre. S'il choisit d'ajouter un nouveau membre, il doit entrer l'adresse ip et le port de contact de la machine de l'invité.
+
+### Sockets
+Ce développement a permis d'intégrer l'utilisation des sockets créées plus tôt. Tout d'abord, le server socket a pour rôle de réceptionner tous les messages inattendus par la machine. Il est créé lors du lancement de l'application et est isolé dans un thread. Lorsqu'il reçoit une connexion, il crée un socket client qui réalisera les actions et les communications nécessaires. Le server socket fonctionne en mode TCP. Pour cela, il utilise la méthode `socket.accept()` qui permet d'attendre une connexion. Cette méthode est dit bloquante : elle arrête l'exécution du programme tant qu'aucune connexion n'est reçue. Cela est problématique quand nous devons arrêter le socket. Pour cela, nous utilisons la méthode `socket.settimeout()` qui permet de définir un temps d'attente maximal. Si aucune connexion n'est reçue dans ce temps, une exception est levée.
+Ensuite, les sockets client sont créés quand c'est nécessaire et sont directement fermés après utilisation.
