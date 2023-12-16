@@ -11,3 +11,8 @@ class Idea(Message):
         if not isinstance(__value, Idea):
             return False
         return self.identifier == __value.identifier
+
+    def to_str(self) -> str:
+        """Returns a string representation of the idea."""
+        author_id = self.author.authentication_key
+        return f"{self.identifier},{self.content},{author_id},{self.creation_date.isoformat()}"

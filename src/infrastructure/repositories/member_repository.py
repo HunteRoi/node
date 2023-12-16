@@ -80,3 +80,40 @@ class MemberRepository(IMemberRepository, SqliteRepository):
             if last_connection_date is None
             else datetime.fromisoformat(last_connection_date),
         )
+
+    def get_members_from_community(self, community_id: str) -> list[Member]:
+        """Get all members from a community."""
+        self.initialize_if_not_exists(community_id)
+
+        result = self._execute_query(
+            community_id,
+            """SELECT
+            authentication_key,
+            ip_address,
+            port,
+            creation_date,
+            last_connection_date
+            FROM nodes;""",
+        )
+
+        members = []
+        for (
+            authentication_key,
+            ip_address,
+            port,
+            creation_date,
+            last_connection_date,
+        ) in result:
+            members.append(
+                Member(
+                    authentication_key,
+                    ip_address,
+                    port,
+                    datetime.fromisoformat(creation_date),
+                    None
+                    if last_connection_date is None
+                    else datetime.fromisoformat(last_connection_date),
+                )
+            )
+
+        return members

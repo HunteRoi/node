@@ -1,5 +1,6 @@
 from consolemenu.items import FunctionItem, SubmenuItem
 
+from src.application.interfaces.icreate_idea import ICreateIdea
 from src.presentation.views.generics.menu import Menu
 from src.application.interfaces.icreate_community import ICreateCommunity
 from src.application.interfaces.iadd_member import IAddMember
@@ -22,6 +23,7 @@ class MainMenu(Menu):
         read_communities_usecase: IReadCommunities,
         read_ideas_from_community_usecase: IReadIdeasFromCommunity,
         read_opinions_usecase: IReadOpinions,
+        create_idea_usecase: ICreateIdea,
     ):
         super().__init__(
             "SIDIPP",
@@ -35,6 +37,7 @@ class MainMenu(Menu):
             read_communities_usecase,
             read_ideas_from_community_usecase,
             read_opinions_usecase,
+            create_idea_usecase,
         )
 
     def start(self, show_exit_option: bool | None = None):

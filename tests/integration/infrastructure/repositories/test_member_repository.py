@@ -63,3 +63,37 @@ class TestMemberRepository:
         member = repository.get_member_for_community(community_id, authentication_key)
 
         assert member.authentication_key == authentication_key
+
+    @pytest.mark.parametrize(
+        "members",
+        [
+            [Member("abc", "127.0.0.1", 0)],
+            [Member("abc", "127.0.0.1", 0), Member("abc2", "127.0.0.2", 0)],
+            [
+                Member("abc", "127.0.0.1", 0),
+                Member("abc2", "127.0.0.2", 0),
+                Member("abc3", "127.0.0.3", 0),
+            ],
+        ],
+    )
+    def test_get_members_from_community(self, temp_folder, members):
+        """Validates that it is possible to get all members of a specific community"""
+        community_id = "1234"
+        repository = MemberRepository(temp_folder)
+        for member in members:
+            repository.add_member_to_community(community_id, member)
+
+        actual_members = repository.get_members_from_community(community_id)
+
+        assert len(actual_members) == len(members)
+
+    def test_get_members_from_community_returns_empty_list_when_no_members(
+        self, temp_folder
+    ):
+        """Validates that an empty list is returned when no members are found"""
+        community_id = "1234"
+        repository = MemberRepository(temp_folder)
+
+        members = repository.get_members_from_community(community_id)
+
+        assert len(members) == 0

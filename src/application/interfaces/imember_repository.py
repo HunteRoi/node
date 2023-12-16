@@ -15,5 +15,11 @@ class IMemberRepository(ABC):
         """Add a member to a specific community"""
 
     @abstractmethod
-    def get_member_for_community(self, community_id: str, member_auth_key: str) -> Member | None:
+    def get_member_for_community(
+        self, community_id: str, member_auth_key: str
+    ) -> Member | None:
         """Get a member of a specific community"""
+
+    @abstractmethod
+    def get_members_from_community(self, community_id: str) -> list[Member]:
+        """Get all members of a specific community"""
