@@ -6,15 +6,19 @@ if ! [ -x "$(command -v docker)" ]; then
     echo "Installing Docker in rootless mode..."
     if [ -x "$(command -v curl)" ]; then
         curl -fsSL https://get.docker.com/rootless | sh
-    elif [ -x "$(command -v wget)" ]; then
-        wget -qO- https://get.docker.com/rootless | sh
     else
-        echo "Neither curl nor wget found. Please install either curl or wget to download the Docker installation script."
+        echo "No curl found. Please install curl to download and execute the Docker installation script."
         exit 1
     fi
     export PATH=/home/$USER/bin:$PATH
     export DOCKER_HOST=unix:///run/user/$UID/docker.sock
     echo "Docker installed successfully in rootless mode."
+fi
+
+# Check if Docker is installed after attempted installation
+if ! [ -x "$(command -v docker)" ]; then
+    echo "Docker installation failed. Please check and install Docker manually."
+    exit 1
 fi
 
 # Check if an argument is provided for the local directory path
