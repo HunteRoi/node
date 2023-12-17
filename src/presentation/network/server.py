@@ -40,6 +40,8 @@ class Server(IServerSocket):
                 message, _ = client.receive_message()
                 if message == "INVITATION":
                     self.join_community_usecase.execute(client)
+                elif message.startswith("CREATE_IDEA"):
+                    print(f"Received idea : {message.split('|')[1]}")
                 client.close_connection()
             except socket.timeout:
                 pass
