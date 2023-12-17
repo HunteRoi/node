@@ -29,5 +29,5 @@ export DOCKER_HOST=unix:///run/user/$UID/docker.sock
 docker pull hunteroi/node:latest
 
 # executes the container
-docker run -it --rm -v "~/data":/app/data hunteroi/node:latest
+docker run -it --rm -p 1664:1664 -v "~/data":/app/data hunteroi/node:latest
 ```
