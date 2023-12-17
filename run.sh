@@ -35,4 +35,4 @@ docker pull hunteroi/node:latest
 
 # Run the container with a volume mounted
 echo "Running the Docker container..."
-docker run -it --rm -v "$local_directory":/app/data hunteroi/node:latest
+docker run -it --rm -p 1664:1664 -v "$local_directory":/app/data hunteroi/node:latest
