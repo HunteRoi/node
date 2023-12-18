@@ -12,6 +12,7 @@ from src.application.interfaces.iread_ideas_from_community import (
     IReadIdeasFromCommunity,
 )
 from src.application.interfaces.iread_opinions import IReadOpinions
+from src.application.interfaces.imachine_service import IMachineService
 
 
 class CommunityMenu(SubMenu):
@@ -25,6 +26,7 @@ class CommunityMenu(SubMenu):
         read_ideas_from_community_usecase: IReadIdeasFromCommunity,
         read_opinions_usecase: IReadOpinions,
         create_idea_usecase: ICreateIdea,
+        machine_service: IMachineService,
     ):
         super().__init__(f'Communauté "{community.name}"')
 
@@ -34,9 +36,10 @@ class CommunityMenu(SubMenu):
         self.read_ideas_from_community_usecase = read_ideas_from_community_usecase
         self.read_opinions_usecase = read_opinions_usecase
         self.create_idea_usecase = create_idea_usecase
+        self.machine_service = machine_service
 
         self.add_member_form = AddMemberForm(
-            self, self.community, self.add_member_usecase
+            self, self.community, self.add_member_usecase, self.machine_service
         )
         self.create_idea_form = CreateIdeaForm(
             self, self.community, self.create_idea_usecase

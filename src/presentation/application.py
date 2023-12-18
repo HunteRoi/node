@@ -1,6 +1,5 @@
 import os
 import threading
-from src.application.use_cases.create_idea import CreateIdea
 
 from src.infrastructure.repositories.community_repository import CommunityRepository
 from src.infrastructure.repositories.member_repository import MemberRepository
@@ -23,6 +22,7 @@ from src.application.use_cases.join_community import JoinCommunity
 from src.application.use_cases.read_communities import ReadCommunities
 from src.application.use_cases.read_ideas_from_community import ReadIdeasFromCommunity
 from src.application.use_cases.read_opinions import ReadOpinions
+from src.application.use_cases.create_idea import CreateIdea
 from src.presentation.views.menus.main_menu import MainMenu
 
 
@@ -91,7 +91,9 @@ class Application:
             self.member_repository,
         )
 
-        self.server_socket = Server(1664, self.join_community_usecase)
+        self.server_socket = Server(
+            self.machine_service.get_port(), self.join_community_usecase
+        )
 
     def run(self):
         """Configures the dependencies and runs the application."""
@@ -112,6 +114,7 @@ class Application:
             self.read_ideas_from_community_usecase,
             self.read_opinions_usecase,
             self.create_idea_usecase,
+            self.machine_service,
         ).show()
 
     def stop(self):

@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 import ntplib
 
 from src.application.interfaces.idatetime_service import IDatetimeService
@@ -14,8 +14,6 @@ class NtpDatetimeService(IDatetimeService):
     def get_datetime(self) -> datetime:
         try:
             response = self.client.request(self.ntp_server)
-            return datetime.utcfromtimestamp(response.tx_time).replace(
-                tzinfo=timezone.utc
-            )
+            return datetime.fromtimestamp(response.tx_time, UTC)
         except Exception:
             return datetime.fromisoformat("1970-01-01T00:00:01+00:00")

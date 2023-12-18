@@ -49,19 +49,19 @@ class TestCreateIdea:
         "members",
         [
             [
-                Member("auth_key1", "127.0.0.1", 0),
-                Member("auth_key2", "127.0.0.2", 0),
+                Member("auth_key1", "127.0.0.1", 1234),
+                Member("auth_key2", "127.0.0.2", 1234),
             ],
             [
-                Member("auth_key1", "127.0.0.1", 0),
-                Member("auth_key2", "127.0.0.2", 0),
-                Member("auth_key3", "127.0.0.3", 0),
+                Member("auth_key1", "127.0.0.1", 1234),
+                Member("auth_key2", "127.0.0.2", 1234),
+                Member("auth_key3", "127.0.0.3", 1234),
             ],
             [
-                Member("auth_key1", "127.0.0.1", 0),
-                Member("auth_key2", "127.0.0.2", 0),
-                Member("auth_key3", "127.0.0.3", 0),
-                Member("auth_key4", "127.0.0.4", 0),
+                Member("auth_key1", "127.0.0.1", 1234),
+                Member("auth_key2", "127.0.0.2", 1234),
+                Member("auth_key3", "127.0.0.3", 1234),
+                Member("auth_key4", "127.0.0.4", 1234),
             ],
         ],
     )
@@ -93,7 +93,7 @@ class TestCreateIdea:
         """Creating an idea should be possible given the proper arguments."""
         mock_client.return_value = mock_client
         content = "content"
-        author = Member("auth_key1", "127.0.0.1", 0)
+        author = Member("auth_key1", "127.0.0.1", 1234)
         create_idea_usecase.id_generator_service.generate.return_value = "123"
         create_idea_usecase.machine_service.get_current_user.return_value = author
 

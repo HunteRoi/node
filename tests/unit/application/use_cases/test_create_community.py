@@ -90,6 +90,15 @@ class TestCreateCommunity:
 
         create_community_mocks.member_repository.add_member_to_community.assert_called_once()
 
+    def test_get_current_user(self, create_community_mocks: CreateCommunity):
+        """Creating a new community should get the current user."""
+        name = "Test Community"
+        description = "This is a test community"
+
+        create_community_mocks.execute(name, description)
+
+        create_community_mocks.machine_service.get_current_user.assert_called_once()
+
     def test_create_community_should_generate_symetric_key(
         self,
         create_community_mocks: CreateCommunity,

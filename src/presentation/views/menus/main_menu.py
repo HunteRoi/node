@@ -9,6 +9,7 @@ from src.application.interfaces.iread_ideas_from_community import (
     IReadIdeasFromCommunity,
 )
 from src.application.interfaces.iread_opinions import IReadOpinions
+from src.application.interfaces.imachine_service import IMachineService
 from src.presentation.views.components.create_community_form import CreateCommunityForm
 from src.presentation.views.menus.select_community_menu import SelectCommunityMenu
 
@@ -24,6 +25,7 @@ class MainMenu(Menu):
         read_ideas_from_community_usecase: IReadIdeasFromCommunity,
         read_opinions_usecase: IReadOpinions,
         create_idea_usecase: ICreateIdea,
+        machine_service: IMachineService,
     ):
         super().__init__(
             "SIDIPP",
@@ -38,6 +40,7 @@ class MainMenu(Menu):
             read_ideas_from_community_usecase,
             read_opinions_usecase,
             create_idea_usecase,
+            machine_service,
         )
 
     def start(self, show_exit_option: bool | None = None):

@@ -51,7 +51,7 @@ class MachineService(IMachineService):
         return public_key, private_key
 
     def get_port(self) -> int:
-        return 0
+        return 1664
 
     def get_current_user(self, community_id: str | None = None) -> Member:
         return Member(
