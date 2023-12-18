@@ -1,5 +1,3 @@
-from time import sleep
-
 from src.domain.entities.member import Member
 from src.application.interfaces.idatetime_service import IDatetimeService
 from src.application.exceptions.authentification_failed_error import (
@@ -75,49 +73,41 @@ class AddMember(IAddMember):
             return error_message
         finally:
             client_socket.close_connection()
-            sleep(10)
 
     def _connect_to_guest(
         self, client_socket: IClientSocket, ip_address: str, port: int
     ):
         """Connect to the guest"""
-        print(f"Connecting to {ip_address}:{port}")
         client_socket.connect_to_server(ip_address, port)
-        print("Connected to the guest")
-        print("Sending invitation")
+
         client_socket.send_message("INVITATION")
 
     def _receive_public_key(self, client_socket: IClientSocket) -> str:
         """Receive the public key from the guest"""
-        print("Waiting for public key")
         public_key, _ = client_socket.receive_message()
         if not public_key:
             raise AuthentificationFailedError("No public key received")
-        print("Public key received")
+
         return public_key
 
     def _send_encryption_public_key(self, client_socket: IClientSocket):
         """Send the public key to the new member"""
-        print("Sending public key")
         client_socket.send_message(self.public_key)
 
     def _send_auth_key(self, client_socket: IClientSocket, auth_key: str):
         """Give the auth key to the new member"""
-        print("Encrypt auth key")
         encrypted_auth_key = self.encryption_service.encrypt(
             auth_key, self.guest_public_key
         )
-        print("Sending auth key")
+
         client_socket.send_message(encrypted_auth_key)
 
     def _receive_auth_key(self, client_socket: IClientSocket) -> str:
         """Receive the auth key"""
-        print("Waiting for auth key")
         reencrypted_auth_key, _ = client_socket.receive_message()
         if not reencrypted_auth_key:
             raise AuthentificationFailedError("Authentification key not valid")
-        print("Auth key received")
-        print("Decrypt auth key")
+
         decrypted_auth_key = self.encryption_service.decrypt(
             reencrypted_auth_key, self.private_key
         )
@@ -142,15 +132,13 @@ class AddMember(IAddMember):
             community_id
         )
         symetric_key = self.file_service.read_file(symetric_key_path)
-        print("Encrypt symetric key")
+
         encrypted_symetric_key = self.encryption_service.encrypt(
             symetric_key, self.guest_public_key
         )
 
-        print("Sending symetric key")
         client_socket.send_message(encrypted_symetric_key)
 
     def _send_reject_message(self, client_socket: IClientSocket, message: str):
         """Send a reject message to the new member"""
-        print("Sending reject message")
         client_socket.send_message(f"REJECT|{message}")

@@ -1,5 +1,3 @@
-import json
-
 from src.application.interfaces.icreate_idea import ICreateIdea
 from src.application.interfaces.iid_generator_service import IIdGeneratorService
 from src.application.interfaces.iidea_repository import IIdeaRepository
@@ -39,11 +37,8 @@ class CreateIdea(ICreateIdea):
             try:
                 client_socket = client.Client()
                 client_socket.connect_to_server(member.ip_address, member.port)
-                print(f"Connection opened to {member.ip_address}:{member.port}")
                 client_socket.send_message(f"CREATE_IDEA|{idea.to_str()}")
-                print(f"Idea sent {idea.to_str()}")
             except:
                 pass
             finally:
                 client_socket.close_connection()
-                print(f"Connection closed to {member.ip_address}:{member.port}")
