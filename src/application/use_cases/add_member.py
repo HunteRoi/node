@@ -6,6 +6,9 @@ from src.application.exceptions.authentification_failed_error import (
 from src.application.interfaces.iasymetric_encryption_service import (
     IAsymetricEncryptionService,
 )
+from src.application.interfaces.isymetric_encryption_service import (
+    ISymetricEncryptionService,
+)
 from src.application.interfaces.iid_generator_service import IIdGeneratorService
 from src.application.interfaces.imachine_service import IMachineService
 from src.application.interfaces.ifile_service import IFileService
@@ -22,14 +25,16 @@ class AddMember(IAddMember):
     def __init__(
         self,
         uuid_generator: IIdGeneratorService,
-        encryption_service: IAsymetricEncryptionService,
+        asymetric_encryption_service: IAsymetricEncryptionService,
+        symetric_encryption_service: ISymetricEncryptionService,
         machine_service: IMachineService,
         file_service: IFileService,
         community_repository: ICommunityRepository,
         member_repository: IMemberRepository,
         datetime_service: IDatetimeService,
     ):
-        self.encryption_service = encryption_service
+        self.asymetric_encryption_service = asymetric_encryption_service
+        self.symetric_encryption_service = symetric_encryption_service
         self.uuid_generator = uuid_generator
         self.machine_service = machine_service
         self.file_service = file_service
@@ -40,6 +45,7 @@ class AddMember(IAddMember):
         self.public_key: str
         self.private_key: str
         self.guest_public_key: str
+        self.symetric_key: str
 
     def execute(self, community_id: str, ip_address: str, port: int):
         (
@@ -63,7 +69,10 @@ class AddMember(IAddMember):
 
             self._add_member_to_community(community_id, auth_key, ip_address, port)
 
-            self._send_community_symetric_key(client_socket, community_id)
+            self.symetric_key = self._get_community_symetric_key(community_id)
+            self._send_community_symetric_key(client_socket)
+
+            self._send_community_informations(client_socket, community_id)
 
             return "Success!"
         except AuthentificationFailedError as error:
@@ -96,7 +105,7 @@ class AddMember(IAddMember):
 
     def _send_auth_key(self, client_socket: IClientSocket, auth_key: str):
         """Give the auth key to the new member"""
-        encrypted_auth_key = self.encryption_service.encrypt(
+        encrypted_auth_key = self.asymetric_encryption_service.encrypt(
             auth_key, self.guest_public_key
         )
 
@@ -108,7 +117,7 @@ class AddMember(IAddMember):
         if not reencrypted_auth_key:
             raise AuthentificationFailedError("Authentification key not valid")
 
-        decrypted_auth_key = self.encryption_service.decrypt(
+        decrypted_auth_key = self.asymetric_encryption_service.decrypt(
             reencrypted_auth_key, self.private_key
         )
 
@@ -124,20 +133,32 @@ class AddMember(IAddMember):
         print("Adding member to community")
         self.member_repository.add_member_to_community(community_id, member)
 
-    def _send_community_symetric_key(
-        self, client_socket: IClientSocket, community_id: str
-    ):
-        """Send the symetric key to the new member"""
+    def _get_community_symetric_key(self, community_id: str) -> str:
+        """Get the symetric key of the community"""
         symetric_key_path = self.community_repository.get_community_encryption_key_path(
             community_id
         )
-        symetric_key = self.file_service.read_file(symetric_key_path)
+        return self.file_service.read_file(symetric_key_path)
 
-        encrypted_symetric_key = self.encryption_service.encrypt(
-            symetric_key, self.guest_public_key
+    def _send_community_symetric_key(self, client_socket: IClientSocket):
+        """Send the symetric key to the new member"""
+        encrypted_symetric_key = self.asymetric_encryption_service.encrypt(
+            self.symetric_key, self.guest_public_key
         )
 
         client_socket.send_message(encrypted_symetric_key)
+
+    def _send_community_informations(
+        self, client_socket: IClientSocket, community_id: str
+    ):
+        """Get the community informations"""
+        community = self.community_repository.get_community(community_id)
+        informations = community.to_str()
+
+        encrypted_informations = self.symetric_encryption_service.encrypt(
+            informations, self.symetric_key
+        )
+        client_socket.send_message(encrypted_informations)
 
     def _send_reject_message(self, client_socket: IClientSocket, message: str):
         """Send a reject message to the new member"""

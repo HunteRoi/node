@@ -30,7 +30,7 @@ class TestCommunity:
         assert community.name == name_community
 
     def test_description_attribute(self):
-        """Validates that a community created with a specified description has 
+        """Validates that a community created with a specified description has
         that description"""
         desc_community = "desc"
 
@@ -39,7 +39,7 @@ class TestCommunity:
         assert community.description == desc_community
 
     def test_creation_date_attribute(self):
-        """Validates that a community created with a specified creation date has 
+        """Validates that a community created with a specified creation date has
         that creation date"""
         creation_date_community = datetime.now()
 
@@ -90,7 +90,7 @@ class TestCommunity:
         assert member.authentication_key in community.members
 
     def test_remove_member_based_on_auth_key(self):
-        """Validate that a member can be removed from the community 
+        """Validate that a member can be removed from the community
         if the authentication key is the same"""
         community = Community("1", "name", "desc")
         member = Member("abc", "127.0.0.1", datetime.now())
@@ -110,7 +110,7 @@ class TestCommunity:
         assert community == community2
 
     def test_community_compared_to_another_with_different_id(self):
-        """Validate that a community can be compared to another community 
+        """Validate that a community can be compared to another community
         with a different ID"""
         community = Community("1", "name", "desc")
         community2 = Community("2", "name", "desc")
@@ -123,3 +123,10 @@ class TestCommunity:
         community2 = "community"
 
         assert community != community2
+
+    def test_community_to_string(self):
+        """Validate that a community can be converted to a string"""
+        creation_date = datetime.fromisoformat("2021-01-01T00:00:00")
+        community = Community("1", "name", "desc", creation_date)
+
+        assert community.to_str() == "1,name,desc,2021-01-01T00:00:00"

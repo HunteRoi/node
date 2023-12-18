@@ -70,6 +70,7 @@ class Application:
         self.add_member_usecase = AddMember(
             self.id_generator,
             self.asymetric_encryption_service,
+            self.symetric_encryption_service,
             self.machine_service,
             self.file_service,
             self.community_repository,

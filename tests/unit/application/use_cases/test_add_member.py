@@ -1,8 +1,9 @@
 from unittest import mock
 from unittest.mock import MagicMock
+from datetime import datetime
 import pytest
 
-
+from src.domain.entities.community import Community
 from src.domain.entities.member import Member
 from src.application.use_cases.add_member import AddMember
 
@@ -21,8 +22,12 @@ class TestAddMember:
     @mock.patch("src.application.interfaces.ifile_service", name="file_service")
     @mock.patch("src.application.interfaces.imachine_service", name="machine_service")
     @mock.patch(
+        "src.application.interfaces.isymetric_encryption_service",
+        name="symetric_encryption_service",
+    )
+    @mock.patch(
         "src.application.interfaces.iasymetric_encryption_service",
-        name="encryption_service",
+        name="asymetric_encryption_service",
     )
     @mock.patch(
         "src.application.interfaces.iid_generator_service", name="uuid_generator"
@@ -30,7 +35,8 @@ class TestAddMember:
     def create_add_member_usecase(
         self,
         uuid_generator: MagicMock,
-        encryption_service: MagicMock,
+        asymetric_encryption_service: MagicMock,
+        symetric_encryption_service: MagicMock,
         machine_service: MagicMock,
         file_service: MagicMock,
         community_repository: MagicMock,
@@ -42,11 +48,19 @@ class TestAddMember:
         community_repository.get_community_encryption_key_path.return_value = (
             "symetric_key_path"
         )
-        encryption_service.encrypt.side_effect = [
+        community = Community(
+            "abc",
+            "community_name",
+            "community_description",
+            datetime(1970, 1, 1, 00, 00, 00),
+        )
+        community_repository.get_community.return_value = community
+        asymetric_encryption_service.encrypt.side_effect = [
             "encr_auth_key",
             "encr_symetric_key",
         ]
-        encryption_service.decrypt.return_value = "auth_code"
+        asymetric_encryption_service.decrypt.return_value = "auth_code"
+        symetric_encryption_service.encrypt.return_value = "encr_informations"
         machine_service.get_asymetric_key_pair.return_value = (
             "public_key",
             "private_key",
@@ -54,7 +68,8 @@ class TestAddMember:
         file_service.read_file.return_value = "symetric_key"
         return AddMember(
             uuid_generator,
-            encryption_service,
+            asymetric_encryption_service,
+            symetric_encryption_service,
             machine_service,
             file_service,
             community_repository,
@@ -153,7 +168,7 @@ class TestAddMember:
 
         add_member_usecase.execute("abc", "127.0.0.1", 1234)
 
-        add_member_usecase.encryption_service.encrypt.assert_any_call(
+        add_member_usecase.asymetric_encryption_service.encrypt.assert_any_call(
             "auth_code", "public_key"
         )
 
@@ -191,7 +206,7 @@ class TestAddMember:
 
         add_member_usecase.execute("abc", "127.0.0.1", 1234)
 
-        add_member_usecase.encryption_service.decrypt.assert_called_once_with(
+        add_member_usecase.asymetric_encryption_service.decrypt.assert_called_once_with(
             "encr_auth_code", "private_key"
         )
 
@@ -209,7 +224,9 @@ class TestAddMember:
         ]
         mock_client.return_value = mock_client
 
-        add_member_usecase.encryption_service.decrypt.return_value = "other_auth_code"
+        add_member_usecase.asymetric_encryption_service.decrypt.return_value = (
+            "other_auth_code"
+        )
 
         add_member_usecase.execute("abc", "127.0.0.1", 1234)
 
@@ -297,7 +314,7 @@ class TestAddMember:
 
         add_member_usecase.execute("abc", "127.0.0.1", 1234)
 
-        add_member_usecase.encryption_service.encrypt.assert_any_call(
+        add_member_usecase.asymetric_encryption_service.encrypt.assert_any_call(
             "symetric_key", "public_key"
         )
 
@@ -333,7 +350,9 @@ class TestAddMember:
         ]
         mock_client.return_value = mock_client
 
-        add_member_usecase.encryption_service.decrypt.return_value = "other_auth_code"
+        add_member_usecase.asymetric_encryption_service.decrypt.return_value = (
+            "other_auth_code"
+        )
 
         add_member_usecase.execute("abc", "127.0.0.1", 1234)
 
@@ -378,3 +397,68 @@ class TestAddMember:
         message = add_member_usecase.execute("abc", "127.0.0.1", 1234)
 
         assert message == "Failure!"
+
+    @mock.patch("src.presentation.network.client.Client", name="mock_client")
+    def test_get_community_informations(
+        self,
+        mock_client: MagicMock,
+        add_member_usecase: AddMember,
+    ):
+        """Method to test that the community informations are retrieved"""
+        guest = tuple(["127.0.0.1", 1111])
+        mock_client.receive_message.side_effect = [
+            tuple(["public_key", guest]),
+            tuple(["encr_auth_code", guest]),
+        ]
+        mock_client.return_value = mock_client
+
+        add_member_usecase.execute("abc", "127.0.0.1", 1234)
+
+        add_member_usecase.community_repository.get_community.assert_called_once_with(
+            "abc"
+        )
+
+    @mock.patch("src.presentation.network.client.Client", name="mock_client")
+    def test_encrypt_community_informations(
+        self,
+        mock_client: MagicMock,
+        add_member_usecase: AddMember,
+    ):
+        """Method to test that the community informations are encrypted"""
+        guest = tuple(["127.0.0.1", 1111])
+        mock_client.receive_message.side_effect = [
+            tuple(["public_key", guest]),
+            tuple(["encr_auth_code", guest]),
+        ]
+        mock_client.return_value = mock_client
+
+        community_mock = MagicMock()
+        community_mock.to_str.return_value = "community_informations"
+        add_member_usecase.community_repository.get_community.return_value = (
+            community_mock
+        )
+
+        add_member_usecase.execute("abc", "127.0.0.1", 1234)
+
+        add_member_usecase.symetric_encryption_service.encrypt.assert_any_call(
+            "community_informations",
+            "symetric_key",
+        )
+
+    @mock.patch("src.presentation.network.client.Client", name="mock_client")
+    def test_send_community_informations(
+        self,
+        mock_client: MagicMock,
+        add_member_usecase: AddMember,
+    ):
+        """Method to test that the community informations are sent to the guest"""
+        guest = tuple(["127.0.0.1", 1111])
+        mock_client.receive_message.side_effect = [
+            tuple(["public_key", guest]),
+            tuple(["encr_auth_code", guest]),
+        ]
+        mock_client.return_value = mock_client
+
+        add_member_usecase.execute("abc", "127.0.0.1", 1234)
+
+        mock_client.send_message.assert_any_call("encr_informations")

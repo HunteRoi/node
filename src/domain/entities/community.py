@@ -6,11 +6,13 @@ from src.domain.entities.member import Member
 class Community:
     """A community is a group of people who share a common interest."""
 
-    def __init__(self,
-                 identifier: str,
-                 name: str,
-                 description: str,
-                 creation_date: datetime = datetime.now()):
+    def __init__(
+        self,
+        identifier: str,
+        name: str,
+        description: str,
+        creation_date: datetime = datetime.now(),
+    ):
         self.identifier = identifier
         self.name = name
         self.description = description
@@ -33,3 +35,7 @@ class Community:
         if not isinstance(__value, Community):
             return False
         return self.identifier == __value.identifier
+
+    def to_str(self) -> str:
+        """Returns a string representation of the community."""
+        return f"{self.identifier},{self.name},{self.description},{self.creation_date.isoformat()}"
