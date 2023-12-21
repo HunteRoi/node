@@ -24,6 +24,7 @@ class AddMember(IAddMember):
 
     def __init__(
         self,
+        base_path: str,
         uuid_generator: IIdGeneratorService,
         asymetric_encryption_service: IAsymetricEncryptionService,
         symetric_encryption_service: ISymetricEncryptionService,
@@ -33,6 +34,7 @@ class AddMember(IAddMember):
         member_repository: IMemberRepository,
         datetime_service: IDatetimeService,
     ):
+        self.base_path = base_path
         self.asymetric_encryption_service = asymetric_encryption_service
         self.symetric_encryption_service = symetric_encryption_service
         self.uuid_generator = uuid_generator
@@ -73,6 +75,8 @@ class AddMember(IAddMember):
             self._send_community_symetric_key(client_socket)
 
             self._send_community_informations(client_socket, community_id)
+
+            self._send_community_database(client_socket, self.base_path, community_id)
 
             return "Success!"
         except AuthentificationFailedError as error:
@@ -130,7 +134,6 @@ class AddMember(IAddMember):
         member = Member(
             auth_key, ip_address, port, self.datetime_service.get_datetime()
         )
-        print("Adding member to community")
         self.member_repository.add_member_to_community(community_id, member)
 
     def _get_community_symetric_key(self, community_id: str) -> str:
@@ -155,10 +158,27 @@ class AddMember(IAddMember):
         community = self.community_repository.get_community(community_id)
         informations = community.to_str()
 
-        encrypted_informations = self.symetric_encryption_service.encrypt(
+        (nonce, tag, encrypted_informations) = self.symetric_encryption_service.encrypt(
             informations, self.symetric_key
         )
-        client_socket.send_message(encrypted_informations)
+
+        message = f"INFORMATIONS|{nonce},{tag},{encrypted_informations}"
+        client_socket.send_message(message)
+
+    def _send_community_database(
+        self, client_socket: IClientSocket, base_path: str, community_id: str
+    ):
+        """Send the community database"""
+        database_path = f"{base_path}/{community_id}.sqlite"
+
+        database = self.file_service.read_file(database_path, with_binary_format=True)
+
+        nonce, tag, encrypted_database = self.symetric_encryption_service.encrypt(
+            database.hex(), self.symetric_key
+        )
+
+        message = f"DATABASE|{nonce},{tag},{encrypted_database}"
+        client_socket.send_message(message)
 
     def _send_reject_message(self, client_socket: IClientSocket, message: str):
         """Send a reject message to the new member"""

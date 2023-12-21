@@ -68,6 +68,7 @@ class Application:
             self.file_service,
         )
         self.add_member_usecase = AddMember(
+            base_path,
             self.id_generator,
             self.asymetric_encryption_service,
             self.symetric_encryption_service,

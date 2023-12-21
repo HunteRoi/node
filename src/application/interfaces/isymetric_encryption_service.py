@@ -9,9 +9,9 @@ class ISymetricEncryptionService(ABC):
         """Generates ramdom symetric symetric key."""
 
     @abstractmethod
-    def encrypt(self, plaintext: str, key: str) -> tuple[bytes, str, str]:
+    def encrypt(self, plaintext: str, key: str) -> tuple[str, str, str]:
         """Encrypts plaintext using symetric key. Returns the nonce, tag and ciphertext."""
 
     @abstractmethod
-    def decrypt(self, ciphertext: str, key: str, tag: str, nonce: bytes) -> str:
+    def decrypt(self, ciphertext: str, key: str, tag: str, nonce: str) -> str:
         """Decrypts ciphertext using symetric key, tag and nonce. Returns the plaintext."""

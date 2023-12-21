@@ -13,7 +13,7 @@ class SymetricEncryptionService(ISymetricEncryptionService):
         bytes_key = Crypto.Random.get_random_bytes(32)
         return bytes.hex(bytes_key)
 
-    def encrypt(self, plaintext: str, key: str) -> tuple[bytes, str, str]:
+    def encrypt(self, plaintext: str, key: str) -> tuple[str, str, str]:
         if plaintext is None or plaintext.strip() == "":
             raise ValueError("Plaintext cannot be empty", plaintext)
 
@@ -26,9 +26,9 @@ class SymetricEncryptionService(ISymetricEncryptionService):
 
         ciphertext, tag = cipher.encrypt_and_digest(plaintext_bytes)
 
-        return (cipher.nonce, tag, ciphertext)
+        return (cipher.nonce.hex(), tag.hex(), ciphertext.hex())
 
-    def decrypt(self, ciphertext: str, key: str, tag: str, nonce: bytes) -> str:
+    def decrypt(self, ciphertext: str, key: str, tag: str, nonce: str) -> str:
         if ciphertext is None or ciphertext.strip() == "":
             raise ValueError("Ciphertext cannot be empty", ciphertext)
 
@@ -42,8 +42,14 @@ class SymetricEncryptionService(ISymetricEncryptionService):
             raise ValueError("Nonce cannot be empty", nonce)
 
         bytes_key = bytes.fromhex(key)
-        cipher = Crypto.Cipher.AES.new(bytes_key, Crypto.Cipher.AES.MODE_EAX, nonce)
+        bytes_ciphertext = bytes.fromhex(ciphertext)
+        bytes_tag = bytes.fromhex(tag)
+        bytes_nonce = bytes.fromhex(nonce)
 
-        plaintext_bytes = cipher.decrypt_and_digest(ciphertext, tag)
+        cipher = Crypto.Cipher.AES.new(
+            bytes_key, Crypto.Cipher.AES.MODE_EAX, bytes_nonce
+        )
+
+        plaintext_bytes = cipher.decrypt_and_verify(bytes_ciphertext, bytes_tag)
 
         return plaintext_bytes.decode()

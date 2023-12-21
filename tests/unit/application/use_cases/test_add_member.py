@@ -60,13 +60,20 @@ class TestAddMember:
             "encr_symetric_key",
         ]
         asymetric_encryption_service.decrypt.return_value = "auth_code"
-        symetric_encryption_service.encrypt.return_value = "encr_informations"
+        symetric_encryption_service.encrypt.side_effect = [
+            ("nonce", "tag", "encr_informations"),
+            ("nonce", "tag", "encr_database"),
+        ]
         machine_service.get_asymetric_key_pair.return_value = (
             "public_key",
             "private_key",
         )
-        file_service.read_file.return_value = "symetric_key"
+        file_service.read_file.side_effect = [
+            "symetric_key",
+            b"community_database",
+        ]
         return AddMember(
+            "base_path",
             uuid_generator,
             asymetric_encryption_service,
             symetric_encryption_service,
@@ -294,9 +301,7 @@ class TestAddMember:
 
         add_member_usecase.execute("abc", "127.0.0.1", 1234)
 
-        add_member_usecase.file_service.read_file.assert_called_once_with(
-            "symetric_key_path"
-        )
+        add_member_usecase.file_service.read_file.assert_any_call("symetric_key_path")
 
     @mock.patch("src.presentation.network.client.Client", name="mock_client")
     def test_encrypt_symetric_key(
@@ -461,4 +466,66 @@ class TestAddMember:
 
         add_member_usecase.execute("abc", "127.0.0.1", 1234)
 
-        mock_client.send_message.assert_any_call("encr_informations")
+        mock_client.send_message.assert_any_call(
+            "INFORMATIONS|nonce,tag,encr_informations"
+        )
+
+    @mock.patch("src.presentation.network.client.Client", name="mock_client")
+    def test_get_community_database(
+        self,
+        mock_client: MagicMock,
+        add_member_usecase: AddMember,
+    ):
+        """Method to test that the community database is retrieved"""
+        guest = tuple(["127.0.0.1", 1111])
+        mock_client.receive_message.side_effect = [
+            tuple(["public_key", guest]),
+            tuple(["encr_auth_code", guest]),
+        ]
+        mock_client.return_value = mock_client
+
+        database_path = "base_path/abc.sqlite"
+        add_member_usecase.execute("abc", "127.0.0.1", 1234)
+
+        add_member_usecase.file_service.read_file.assert_any_call(
+            database_path, with_binary_format=True
+        )
+
+    @mock.patch("src.presentation.network.client.Client", name="mock_client")
+    def test_encrypt_community_database(
+        self,
+        mock_client: MagicMock,
+        add_member_usecase: AddMember,
+    ):
+        """Method to test that the community database is encrypted"""
+        guest = tuple(["127.0.0.1", 1111])
+        mock_client.receive_message.side_effect = [
+            tuple(["public_key", guest]),
+            tuple(["encr_auth_code", guest]),
+        ]
+        mock_client.return_value = mock_client
+
+        add_member_usecase.execute("abc", "127.0.0.1", 1234)
+
+        add_member_usecase.symetric_encryption_service.encrypt.assert_any_call(
+            b"community_database".hex(),
+            "symetric_key",
+        )
+
+    @mock.patch("src.presentation.network.client.Client", name="mock_client")
+    def test_send_community_database(
+        self,
+        mock_client: MagicMock,
+        add_member_usecase: AddMember,
+    ):
+        """Method to test that the community database is sent to the guest"""
+        guest = tuple(["127.0.0.1", 1111])
+        mock_client.receive_message.side_effect = [
+            tuple(["public_key", guest]),
+            tuple(["encr_auth_code", guest]),
+        ]
+        mock_client.return_value = mock_client
+
+        add_member_usecase.execute("abc", "127.0.0.1", 1234)
+
+        mock_client.send_message.assert_any_call("DATABASE|nonce,tag,encr_database")
