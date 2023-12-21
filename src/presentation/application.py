@@ -91,6 +91,9 @@ class Application:
             self.id_generator,
             self.idea_repository,
             self.member_repository,
+            self.community_repository,
+            self.file_service,
+            self.symetric_encryption_service,
         )
 
         self.server_socket = Server(
