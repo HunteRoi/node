@@ -42,6 +42,8 @@ class Server(IServerSocket):
                     self.join_community_usecase.execute(client)
                 elif message.startswith("CREATE_IDEA"):
                     print(f"Received idea : {message.split('|')[1]}")
+                elif message.startswith("CREATE_OPINION"):
+                    print(f"Received opinion : {message.split('|')[1]}")
                 client.close_connection()
             except socket.timeout:
                 pass

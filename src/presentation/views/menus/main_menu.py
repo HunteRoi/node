@@ -1,6 +1,7 @@
 from consolemenu.items import FunctionItem, SubmenuItem
 
 from src.application.interfaces.icreate_idea import ICreateIdea
+from src.application.interfaces.icreate_opinion import ICreateOpinion
 from src.presentation.views.generics.menu import Menu
 from src.application.interfaces.icreate_community import ICreateCommunity
 from src.application.interfaces.iadd_member import IAddMember
@@ -25,6 +26,7 @@ class MainMenu(Menu):
         read_ideas_from_community_usecase: IReadIdeasFromCommunity,
         read_opinions_usecase: IReadOpinions,
         create_idea_usecase: ICreateIdea,
+        create_opinion_usecase: ICreateOpinion,
         machine_service: IMachineService,
     ):
         super().__init__(
@@ -40,21 +42,20 @@ class MainMenu(Menu):
             read_ideas_from_community_usecase,
             read_opinions_usecase,
             create_idea_usecase,
+            create_opinion_usecase,
             machine_service,
         )
-
-    def start(self, show_exit_option: bool | None = None):
-        """Creates the menu and shows it"""
-        self.items.clear()
-
-        create_community_item = FunctionItem(
+        self.create_community_item = FunctionItem(
             "Créer une communauté", self.create_community_form.execute
         )
-        self.append_item(create_community_item)
-
-        read_community_item = SubmenuItem(
+        self.read_community_item = SubmenuItem(
             "Se connecter à une communauté", self.select_community_menu, self
         )
-        self.append_item(read_community_item)
 
-        super().start(show_exit_option)
+    def draw(self):
+        """Creates the menu and shows it"""
+        if self.create_community_item not in self.items:
+            self.append_item(self.create_community_item)
+        if self.read_community_item not in self.items:
+            self.append_item(self.read_community_item)
+        super().draw()

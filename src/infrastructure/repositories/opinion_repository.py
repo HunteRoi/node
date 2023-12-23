@@ -11,12 +11,12 @@ class OpinionRepository(IOpinionRepository, SqliteRepository):
         self._execute_statement(
             target_database,
             """CREATE TABLE IF NOT EXISTS messages (
-                identifier INTEGER CONSTRAINT messages_pk PRIMARY KEY AUTOINCREMENT,
+                identifier TEXT CONSTRAINT messages_pk PRIMARY KEY,
                 author TEXT NOT NULL REFERENCES nodes(authentication_key),
                 content TEXT NOT NULL,
-                parent_message INTEGER REFERENCES messages(identifier) ON DELETE CASCADE,
+                parent_message TEXT REFERENCES messages(identifier) ON DELETE CASCADE,
                 creation_date DATETIME DEFAULT CURRENT_TIMESTAMP
-            );"""
+            );""",
         )
 
     def add_opinion_to_community(self, community_id: str, opinion: Opinion) -> None:
@@ -25,16 +25,24 @@ class OpinionRepository(IOpinionRepository, SqliteRepository):
         self._execute_statement(
             community_id,
             """INSERT INTO messages(
+                identifier,
                 content,
                 creation_date,
                 author,
                 parent_message
-            ) VALUES (?, ?, ?, ?);""",
-            (opinion.content, str(opinion.creation_date),
-             opinion.author.authentication_key, opinion.parent.identifier)
+            ) VALUES (?, ?, ?, ?, ?);""",
+            (
+                opinion.identifier,
+                opinion.content,
+                str(opinion.creation_date),
+                opinion.author.authentication_key,
+                opinion.parent.identifier,
+            ),
         )
 
-    def get_opinions_by_parent(self, community_id: str, parent_id: int) -> list[Opinion]:
+    def get_opinions_by_parent(
+        self, community_id: str, parent_id: str
+    ) -> list[Opinion]:
         result = self._execute_query(
             community_id,
             """SELECT
@@ -45,13 +53,45 @@ class OpinionRepository(IOpinionRepository, SqliteRepository):
                 parent_message
             FROM messages
             WHERE parent_message = ?;""",
-            (parent_id,)
+            (parent_id,),
         )
 
-        return [Opinion(
+        return [
+            Opinion(
+                identifier,
+                content,
+                author,
+                datetime.fromisoformat(creation_date),
+                parent_message,
+            )
+            for identifier, content, creation_date, author, parent_message in result
+        ]
+
+    def get_opinion_from_community(
+        self, community_id: str, opinion_id: str
+    ) -> Opinion | None:
+        result = self._execute_query(
+            community_id,
+            """SELECT
+                identifier,
+                content,
+                creation_date,
+                author,
+                parent_message
+            FROM messages
+            WHERE identifier = ? AND parent_message IS NOT NULL;""",
+            (opinion_id,),
+        )
+
+        if len(result) == 0:
+            return None
+
+        (identifier, content, creation_date, author, parent_message) = result[0]
+
+        return Opinion(
             identifier,
             content,
             author,
             datetime.fromisoformat(creation_date),
-            parent_message
-        ) for identifier, content, creation_date, author, parent_message in result]
+            parent_message,
+        )

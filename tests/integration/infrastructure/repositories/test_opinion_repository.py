@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 import pytest
+from src.infrastructure.repositories import idea_repository
 
 from src.infrastructure.repositories.idea_repository import IdeaRepository
 from src.infrastructure.repositories.opinion_repository import OpinionRepository
@@ -28,8 +29,8 @@ class TestOpinionRrepository:
     def test_add_opinion_to_idea(self, author, temp_folder):
         """Validates that it is possible to add a opinion to a community"""
         community_id = "1234"
-        idea = Idea(1, "An idea", author, datetime.now())
-        opinion = Opinion(2, "An opinion", author, datetime.now(), idea)
+        idea = Idea("1", "An idea", author, datetime.now())
+        opinion = Opinion("2", "An opinion", author, datetime.now(), idea)
 
         idea_repository = IdeaRepository(temp_folder)
         opinion_repository = OpinionRepository(temp_folder)
@@ -42,8 +43,8 @@ class TestOpinionRrepository:
     def test_get_opinions_by_parent(self, author, temp_folder):
         """Validates that it is possible to get a messages by message parent"""
         community_id = "1234"
-        idea = Idea(1, "bienvenu", author, datetime.now())
-        opinion = Opinion(2, "An opinion", author, datetime.now(), idea)
+        idea = Idea("1", "bienvenu", author, datetime.now())
+        opinion = Opinion("2", "An opinion", author, datetime.now(), idea)
 
         idea_repository = IdeaRepository(temp_folder)
         opinion_repository = OpinionRepository(temp_folder)
@@ -58,3 +59,19 @@ class TestOpinionRrepository:
         assert len(result) == 1
         assert result[0].identifier == opinion.identifier
         assert result[0].parent == opinion.parent.identifier
+
+    def test_get_opinion_from_community(self, author, temp_folder):
+        """Validates that it is possible to a get an opinion based on its identifier"""
+        community_id = "1234"
+        idea = Idea("1", "content", author)
+        opinion = Opinion("2", "content", author, datetime.now(), idea)
+        idea_repository = IdeaRepository(temp_folder)
+        opinion_repository = OpinionRepository(temp_folder)
+        idea_repository.add_idea_to_community(community_id, idea)
+        opinion_repository.add_opinion_to_community(community_id, opinion)
+
+        result = opinion_repository.get_opinion_from_community(
+            community_id, opinion.identifier
+        )
+
+        assert result.identifier == opinion.identifier

@@ -7,5 +7,5 @@ class IReadIdeasFromCommunity(ABC):
     """Interface for read ideas from community"""
 
     @abstractmethod
-    def execute(self, community_id: int) -> list[Idea]:
+    def execute(self, community_id: str) -> list[Idea]:
         """Read ideas from community"""

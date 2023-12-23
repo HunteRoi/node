@@ -9,5 +9,7 @@ class ReadOpinions(IReadOpinions):
     def __init__(self, opinion_repository: IOpinionRepository):
         self.opinion_repository = opinion_repository
 
-    def execute(self, community_id: int, idea_or_opinion_id: str) -> list[Opinion]:
-        return self.opinion_repository.get_opinions_by_parent(community_id, idea_or_opinion_id)
+    def execute(self, community_id: str, idea_or_opinion_id: str) -> list[Opinion]:
+        return self.opinion_repository.get_opinions_by_parent(
+            community_id, idea_or_opinion_id
+        )

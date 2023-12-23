@@ -1,5 +1,6 @@
 import os
 import threading
+from src.application.use_cases.create_opinion import CreateOpinion
 
 from src.infrastructure.repositories.community_repository import CommunityRepository
 from src.infrastructure.repositories.member_repository import MemberRepository
@@ -95,6 +96,16 @@ class Application:
             self.file_service,
             self.symetric_encryption_service,
         )
+        self.create_opinion_usecase = CreateOpinion(
+            self.machine_service,
+            self.id_generator,
+            self.idea_repository,
+            self.opinion_repository,
+            self.member_repository,
+            self.community_repository,
+            self.symetric_encryption_service,
+            self.file_service,
+        )
 
         self.server_socket = Server(
             self.machine_service.get_port(), self.join_community_usecase
@@ -119,6 +130,7 @@ class Application:
             self.read_ideas_from_community_usecase,
             self.read_opinions_usecase,
             self.create_idea_usecase,
+            self.create_opinion_usecase,
             self.machine_service,
         ).show()
 

@@ -11,12 +11,12 @@ class IdeaRepository(IIdeaRepository, SqliteRepository):
         self._execute_statement(
             target_database,
             """CREATE TABLE IF NOT EXISTS messages (
-                identifier INTEGER CONSTRAINT messages_pk PRIMARY KEY AUTOINCREMENT,
+                identifier TEXT CONSTRAINT messages_pk PRIMARY KEY,
                 author TEXT NOT NULL REFERENCES nodes(authentication_key),
                 content TEXT NOT NULL,
-                parent_message INTEGER REFERENCES messages(identifier) ON DELETE CASCADE,
+                parent_message TEXT REFERENCES messages(identifier) ON DELETE CASCADE,
                 creation_date DATETIME DEFAULT CURRENT_TIMESTAMP
-            );"""
+            );""",
         )
 
     def add_idea_to_community(self, community_id: str, idea: Idea) -> None:
@@ -25,13 +25,19 @@ class IdeaRepository(IIdeaRepository, SqliteRepository):
         self._execute_statement(
             community_id,
             """INSERT INTO messages(
+                identifier,
                 content,
                 creation_date,
                 author,
                 parent_message
-            ) VALUES (?, ?, ?, ?);""",
-            (idea.content, str(idea.creation_date),
-             idea.author.authentication_key, None)
+            ) VALUES (?, ?, ?, ?, ?);""",
+            (
+                idea.identifier,
+                idea.content,
+                str(idea.creation_date),
+                idea.author.authentication_key,
+                None,
+            ),
         )
 
     def get_ideas_by_community(self, community_id: str) -> list[Idea]:
@@ -43,12 +49,38 @@ class IdeaRepository(IIdeaRepository, SqliteRepository):
                 creation_date,
                 author
             FROM messages
-            WHERE parent_message IS NULL;"""
+            WHERE parent_message IS NULL;""",
         )
 
-        return [Idea(
+        return [
+            Idea(
+                identifier,
+                content,
+                author,
+                datetime.fromisoformat(creation_date),
+            )
+            for identifier, content, creation_date, author in result
+        ]
+
+    def get_idea_from_community(self, community_id: str, idea_id: str) -> Idea | None:
+        result = self._execute_query(
+            community_id,
+            """SELECT
+                identifier,
+                content,
+                creation_date,
+                author
+            FROM messages
+            WHERE identifier = ? AND parent_message IS NULL;""",
+            (idea_id,),
+        )
+        if len(result) == 0:
+            return None
+
+        (
             identifier,
             content,
+            creation_date,
             author,
-            datetime.fromisoformat(creation_date)
-        ) for identifier, content, creation_date, author in result]
+        ) = result[0]
+        return Idea(identifier, content, author, datetime.fromisoformat(creation_date))

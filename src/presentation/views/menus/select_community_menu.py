@@ -1,6 +1,7 @@
 from consolemenu.items import SubmenuItem
 
 from src.application.interfaces.icreate_idea import ICreateIdea
+from src.application.interfaces.icreate_opinion import ICreateOpinion
 from src.presentation.views.menus.community_menu import CommunityMenu
 from src.presentation.views.generics.submenu import SubMenu
 from src.domain.entities.community import Community
@@ -23,6 +24,7 @@ class SelectCommunityMenu(SubMenu):
         read_ideas_from_community_usecase: IReadIdeasFromCommunity,
         read_opinions_usecase: IReadOpinions,
         create_idea_usecase: ICreateIdea,
+        create_opinion_usecase: ICreateOpinion,
         machine_service: IMachineService,
     ):
         super().__init__("Sélectionnez une communauté")
@@ -32,17 +34,18 @@ class SelectCommunityMenu(SubMenu):
         self.read_ideas_from_community_usecase = read_ideas_from_community_usecase
         self.read_opinions_usecase = read_opinions_usecase
         self.create_idea_usecase = create_idea_usecase
+        self.create_opinion_usecase = create_opinion_usecase
         self.machine_service = machine_service
 
-    def start(self, show_exit_option: bool | None = None):
+    def draw(self):
         """Creates the menu with the communities and shows it"""
         self.items.clear()
 
         communities = self.read_communities_usecase.execute()
         for community in communities:
             self._add_community_item(community)
-
-        super().start(show_exit_option)
+        self.add_exit()
+        super().draw()
 
     def _add_community_item(self, community: Community):
         """Adds a community item to the menu"""
@@ -53,6 +56,7 @@ class SelectCommunityMenu(SubMenu):
             self.read_ideas_from_community_usecase,
             self.read_opinions_usecase,
             self.create_idea_usecase,
+            self.create_opinion_usecase,
             self.machine_service,
         )
         community_item = SubmenuItem(community.name, submenu, self)

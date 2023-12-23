@@ -11,7 +11,7 @@ class IMachineService(ABC):
         """Gets the machine's IP address"""
 
     @abstractmethod
-    def get_auth_key(self, community_id: int | None = None) -> str:
+    def get_auth_key(self, community_id: str | None = None) -> str:
         """Gets the machine's authentication key"""
 
     @abstractmethod

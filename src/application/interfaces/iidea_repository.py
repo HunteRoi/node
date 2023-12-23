@@ -16,3 +16,7 @@ class IIdeaRepository(ABC):
     @abstractmethod
     def get_ideas_by_community(self, community_id: str) -> list[Idea]:
         """Get ideas by community"""
+
+    @abstractmethod
+    def get_idea_from_community(self, community_id: str, idea_id: str) -> Idea | None:
+        """Get idea from community"""

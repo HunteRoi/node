@@ -30,7 +30,7 @@ class MachineService(IMachineService):
     def get_ip_address(self) -> str:
         return socket.gethostbyname(socket.gethostname())
 
-    def get_auth_key(self, community_id: int | None = None) -> str:
+    def get_auth_key(self, community_id: str | None = None) -> str:
         if community_id is None:
             return self.id_generator_service.generate()
         return self.community_repository.get_authentication_key_for_community(

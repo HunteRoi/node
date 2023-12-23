@@ -14,5 +14,13 @@ class IOpinionRepository(ABC):
         """Add an opinion to a specific community"""
 
     @abstractmethod
-    def get_opinions_by_parent(self, community_id: str, parent_id: int) -> list[Opinion]:
+    def get_opinions_by_parent(
+        self, community_id: str, parent_id: str
+    ) -> list[Opinion]:
         """Get opinions by parent"""
+
+    @abstractmethod
+    def get_opinion_from_community(
+        self, community_id: str, opinion_id: str
+    ) -> Opinion | None:
+        """Get opinion from community"""
