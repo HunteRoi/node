@@ -1,5 +1,6 @@
 import socket
 
+from src.application.interfaces.idatetime_service import IDatetimeService
 from src.application.interfaces.imachine_service import IMachineService
 from src.application.interfaces.icommunity_repository import ICommunityRepository
 from src.application.interfaces.iid_generator_service import IIdGeneratorService
@@ -20,12 +21,14 @@ class MachineService(IMachineService):
         id_generator_service: IIdGeneratorService,
         encryption_service: IAsymetricEncryptionService,
         file_service: IFileService,
+        datetime_service: IDatetimeService,
     ):
         self.base_path = base_path
         self.community_repository = community_repository
         self.id_generator_service = id_generator_service
         self.encryption_service = encryption_service
         self.file_service = file_service
+        self.datetime_service = datetime_service
 
     def get_ip_address(self) -> str:
         return socket.gethostbyname(socket.gethostname())
@@ -58,4 +61,5 @@ class MachineService(IMachineService):
             self.get_auth_key(community_id),
             self.get_ip_address(),
             self.get_port(),
+            self.datetime_service.get_datetime(),
         )

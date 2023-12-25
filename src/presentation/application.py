@@ -1,6 +1,5 @@
 import os
 import threading
-from src.application.use_cases.create_opinion import CreateOpinion
 
 from src.infrastructure.repositories.community_repository import CommunityRepository
 from src.infrastructure.repositories.member_repository import MemberRepository
@@ -15,8 +14,8 @@ from src.infrastructure.services.asymetric_encryption_service import (
 from src.infrastructure.services.symetric_encryption_service import (
     SymetricEncryptionService,
 )
-from src.presentation.network.server import Server
 from src.infrastructure.services.file_service import FileService
+from src.application.use_cases.create_opinion import CreateOpinion
 from src.application.use_cases.create_community import CreateCommunity
 from src.application.use_cases.add_member import AddMember
 from src.application.use_cases.join_community import JoinCommunity
@@ -24,6 +23,7 @@ from src.application.use_cases.read_communities import ReadCommunities
 from src.application.use_cases.read_ideas_from_community import ReadIdeasFromCommunity
 from src.application.use_cases.read_opinions import ReadOpinions
 from src.application.use_cases.create_idea import CreateIdea
+from src.presentation.network.server import Server
 from src.presentation.views.menus.main_menu import MainMenu
 
 
@@ -55,6 +55,7 @@ class Application:
             self.id_generator,
             self.asymetric_encryption_service,
             self.file_service,
+            self.datetime_service,
         )
 
         self.create_community_usecase = CreateCommunity(
@@ -67,6 +68,7 @@ class Application:
             self.symetric_encryption_service,
             self.machine_service,
             self.file_service,
+            self.datetime_service,
         )
         self.add_member_usecase = AddMember(
             base_path,
@@ -95,6 +97,7 @@ class Application:
             self.community_repository,
             self.file_service,
             self.symetric_encryption_service,
+            self.datetime_service,
         )
         self.create_opinion_usecase = CreateOpinion(
             self.machine_service,
@@ -105,6 +108,7 @@ class Application:
             self.community_repository,
             self.symetric_encryption_service,
             self.file_service,
+            self.datetime_service,
         )
 
         self.server_socket = Server(

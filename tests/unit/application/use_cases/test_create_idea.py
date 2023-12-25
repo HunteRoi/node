@@ -11,6 +11,9 @@ class TestCreateIdea:
 
     @pytest.fixture(scope="function", autouse=True, name="create_idea_usecase")
     @mock.patch(
+        "src.application.interfaces.idatetime_service", name="datetime_service_mock"
+    )
+    @mock.patch(
         "src.application.interfaces.isymetric_encryption_service",
         name="symetric_encryption_service_mock",
     )
@@ -38,6 +41,7 @@ class TestCreateIdea:
         community_repo_mock: MagicMock,
         file_service_mock: MagicMock,
         symetric_encryption_service_mock: MagicMock,
+        datetime_service_mock: MagicMock,
     ):
         """Create a usecase instance."""
         return CreateIdea(
@@ -48,6 +52,7 @@ class TestCreateIdea:
             community_repo_mock,
             file_service_mock,
             symetric_encryption_service_mock,
+            datetime_service_mock,
         )
 
     @mock.patch("src.presentation.network.client.Client", name="mock_client")
@@ -202,3 +207,13 @@ class TestCreateIdea:
         output = create_idea_usecase.execute("1", "content")
 
         assert output != "Success!"
+
+    @mock.patch("src.presentation.network.client.Client", name="mock_client")
+    def test_create_idea_should_call_datetime_service(
+        self, mock_client, create_idea_usecase: CreateIdea
+    ):
+        """Creating an idea should be possible given the proper arguments."""
+        mock_client.return_value = mock_client
+        create_idea_usecase.execute("1", "content")
+
+        create_idea_usecase.datetime_service.get_datetime.assert_called_once()

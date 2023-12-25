@@ -15,7 +15,7 @@ class CreateCommunityForm(Form):
     def execute(self):
         """Executes the interaction with the user"""
         try:
-            name = self._prompt_user("Nom de la communauté : ", enable_quit=True)
+            name = self._prompt_user("Nom de la communauté", enable_quit=True)
             description = self._prompt_user(
                 "Description de la communauté (Entrée pour ignorer): "
             )

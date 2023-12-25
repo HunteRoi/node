@@ -18,6 +18,9 @@ class TestCreateCommunity:
 
     @pytest.fixture(scope="function", autouse=True, name="create_community_mocks")
     @mock.patch(
+        "src.application.interfaces.idatetime_service", name="datetime_service_mock"
+    )
+    @mock.patch(
         "src.application.interfaces.icommunity_repository",
         name="mock_community_repository",
     )
@@ -51,6 +54,7 @@ class TestCreateCommunity:
         mock_encryption_service: MagicMock,
         mock_machine_service: MagicMock,
         mock_file_service: MagicMock,
+        datetime_service_mock: MagicMock,
         temp_folder,
     ) -> CreateCommunity:
         """Create a use case for creating a community."""
@@ -64,6 +68,7 @@ class TestCreateCommunity:
             mock_encryption_service,
             mock_machine_service,
             mock_file_service,
+            datetime_service_mock,
         )
 
     def test_create_community(
@@ -156,3 +161,14 @@ class TestCreateCommunity:
         output = create_community_mocks.execute("name", "description")
 
         assert output != "Success!"
+
+    def test_create_community_should_call_datetime_service(
+        self, create_community_mocks: CreateCommunity
+    ):
+        """Creating a community should require a datetime service."""
+        name = "Test Community"
+        description = "This is a test community"
+
+        create_community_mocks.execute(name, description)
+
+        create_community_mocks.datetime_service.get_datetime.assert_called_once()

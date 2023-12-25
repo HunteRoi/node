@@ -14,9 +14,13 @@ class TestCreateOpinion:
 
     @pytest.fixture(scope="function", autouse=True, name="author")
     def create_member(self):
+        """Create a member instance."""
         return Member("auth_key1", "127.0.0.1", 1664)
 
     @pytest.fixture(scope="function", autouse=True, name="create_opinion_usecase")
+    @mock.patch(
+        "src.application.interfaces.idatetime_service", name="datetime_service_mock"
+    )
     @mock.patch("src.application.interfaces.ifile_service", name="file_service_mock")
     @mock.patch(
         "src.application.interfaces.isymetric_encryption_service",
@@ -49,6 +53,7 @@ class TestCreateOpinion:
         community_repo_mock: MagicMock,
         symetric_encryption_service_mock: MagicMock,
         file_service_mock: MagicMock,
+        datetime_service_mock: MagicMock,
     ):
         """Create a usecase instance."""
         return CreateOpinion(
@@ -60,6 +65,7 @@ class TestCreateOpinion:
             community_repo_mock,
             symetric_encryption_service_mock,
             file_service_mock,
+            datetime_service_mock,
         )
 
     @pytest.fixture(scope="function", autouse=True, name="idea")
@@ -267,3 +273,15 @@ class TestCreateOpinion:
         output = create_opinion_usecase.execute("1", "1", "content")
 
         assert output != "Success!"
+
+    @mock.patch("src.presentation.network.client.Client", name="mock_client")
+    def test_create_opinion_should_call_datetime_service(
+        self, mock_client: MagicMock, create_opinion_usecase: CreateOpinion
+    ):
+        """Creating an opinion should call the datetime service."""
+        mock_client.return_value = mock_client
+        content = "content"
+
+        create_opinion_usecase.execute("1", "1", content)
+
+        create_opinion_usecase.datetime_service.get_datetime.assert_called_once()

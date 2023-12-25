@@ -1,5 +1,6 @@
 from src.application.interfaces.icommunity_repository import ICommunityRepository
 from src.application.interfaces.icreate_idea import ICreateIdea
+from src.application.interfaces.idatetime_service import IDatetimeService
 from src.application.interfaces.ifile_service import IFileService
 from src.application.interfaces.iid_generator_service import IIdGeneratorService
 from src.application.interfaces.iidea_repository import IIdeaRepository
@@ -24,6 +25,7 @@ class CreateIdea(ICreateIdea):
         community_repository: ICommunityRepository,
         file_service: IFileService,
         symetric_encryption_service: ISymetricEncryptionService,
+        datetime_service: IDatetimeService,
     ):
         self.machine_service = machine_service
         self.id_generator_service = id_generator_service
@@ -32,6 +34,7 @@ class CreateIdea(ICreateIdea):
         self.community_repository = community_repository
         self.file_service = file_service
         self.symetric_encryption_service = symetric_encryption_service
+        self.datetime_service = datetime_service
 
     def _get_symetric_key(self, community_id: str):
         """Get the symetric key from the community."""
@@ -50,7 +53,12 @@ class CreateIdea(ICreateIdea):
                 self.member_repository.get_members_from_community(community_id),
             )
 
-            idea = Idea(self.id_generator_service.generate(), content, author)
+            idea = Idea(
+                self.id_generator_service.generate(),
+                content,
+                author,
+                self.datetime_service.get_datetime(),
+            )
             self.idea_repository.add_idea_to_community(community_id, idea)
 
             for member in members:

@@ -18,6 +18,9 @@ class TestMachineService:
 
     @pytest.fixture(scope="function", autouse=True, name="machine_service")
     @mock.patch(
+        "src.application.interfaces.idatetime_service", name="datetime_service_mock"
+    )
+    @mock.patch(
         "src.application.interfaces.icommunity_repository", name="community_repository"
     )
     @mock.patch("src.application.interfaces.iid_generator_service", name="id_generator")
@@ -31,11 +34,17 @@ class TestMachineService:
         id_generator: MagicMock,
         encryption: MagicMock,
         file_service: MagicMock,
+        datetime_service_mock: MagicMock,
         temp_folder,
     ) -> MachineService:
         """Fixture for machine service."""
         return MachineService(
-            temp_folder, community_repository, id_generator, encryption, file_service
+            temp_folder,
+            community_repository,
+            id_generator,
+            encryption,
+            file_service,
+            datetime_service_mock,
         )
 
     @mock.patch("socket.gethostbyname", name="socket")
@@ -248,3 +257,11 @@ class TestMachineService:
         user = machine_service.get_current_user(community_id)
 
         assert user.port == get_port_mock.return_value
+
+    def test_get_current_user_calls_datetime_service(
+        self, machine_service: MachineService
+    ):
+        """Test getting the current user."""
+        machine_service.get_current_user(None)
+
+        machine_service.datetime_service.get_datetime.assert_called_once()

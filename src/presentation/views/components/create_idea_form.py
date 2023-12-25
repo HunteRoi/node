@@ -19,7 +19,7 @@ class CreateIdeaForm(Form):
     def execute(self):
         """Executes the interaction with the user"""
         try:
-            idea_content = self._prompt_user("Décrivez votre idée : ", enable_quit=True)
+            idea_content = self._prompt_user("Décrivez votre idée", enable_quit=True)
 
             result = self.create_idea_usecase.execute(
                 self.community.identifier, idea_content

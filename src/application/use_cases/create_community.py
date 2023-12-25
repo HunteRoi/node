@@ -1,3 +1,4 @@
+from src.application.interfaces.idatetime_service import IDatetimeService
 from src.application.interfaces.imachine_service import IMachineService
 from src.application.interfaces.icreate_community import ICreateCommunity
 from src.application.interfaces.icommunity_repository import ICommunityRepository
@@ -27,6 +28,7 @@ class CreateCommunity(ICreateCommunity):
         encryption_service: ISymetricEncryptionService,
         machine_service: IMachineService,
         file_service: IFileService,
+        datetime_service: IDatetimeService,
     ):
         self.keys_folder_path = keys_folder_path
         self.community_repository = community_repository
@@ -37,6 +39,7 @@ class CreateCommunity(ICreateCommunity):
         self.encryption_service = encryption_service
         self.machine_service = machine_service
         self.file_service = file_service
+        self.datetime_service = datetime_service
 
     def execute(self, name: str, description: str) -> str:
         try:
@@ -64,7 +67,12 @@ class CreateCommunity(ICreateCommunity):
         self, name: str, description: str, member: Member
     ) -> Community:
         """Creates a community with the given parameters"""
-        community = Community(self.id_generator_service.generate(), name, description)
+        community = Community(
+            self.id_generator_service.generate(),
+            name,
+            description,
+            self.datetime_service.get_datetime(),
+        )
         community.add_member(member)
         return community
 

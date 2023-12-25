@@ -565,3 +565,21 @@ class TestAddMember:
         output = add_member_usecase.execute("abc", "127.0.0.1", 1234)
 
         assert output != "Success!"
+
+    @mock.patch("src.presentation.network.client.Client", name="mock_client")
+    def test_add_member_should_call_datetime_service(
+        self, mock_client, add_member_usecase: AddMember
+    ):
+        """Method to test that the datetime service is called"""
+        guest = tuple(["127.0.0.1", 1664])
+        mock_client.receive_message.side_effect = [
+            tuple(["public_key", guest]),
+            tuple(["encr_auth_code", guest]),
+        ]
+        mock_client.return_value = mock_client
+        ip_address = "127.0.0.1"
+        port = 1664
+
+        add_member_usecase.execute("abc", ip_address, port)
+
+        add_member_usecase.datetime_service.get_datetime.assert_called_once()

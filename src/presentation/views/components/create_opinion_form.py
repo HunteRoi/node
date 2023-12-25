@@ -25,9 +25,7 @@ class CreateOpinionForm(Form):
     def execute(self):
         """Executes the interaction with the user"""
         try:
-            idea_content = self._prompt_user(
-                "Décrivez votre opinion : ", enable_quit=True
-            )
+            idea_content = self._prompt_user("Décrivez votre opinion", enable_quit=True)
 
             result = self.create_opinion_usecase.execute(
                 self.community.identifier, self.idea_or_opinion.identifier, idea_content
