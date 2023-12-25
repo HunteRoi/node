@@ -242,3 +242,28 @@ class TestCreateOpinion:
 
         create_opinion_usecase.community_repository.get_community_encryption_key_path.assert_called_once()
         create_opinion_usecase.file_service.read_file.assert_called_once()
+
+    @mock.patch("src.presentation.network.client.Client", name="mock_client")
+    def test_success_output(
+        self, mock_client: MagicMock, create_opinion_usecase: CreateOpinion
+    ):
+        """Creating an opinion should return a success output."""
+        mock_client.return_value = mock_client
+
+        output = create_opinion_usecase.execute("1", "1", "content")
+
+        assert output == "Success!"
+
+    @mock.patch("src.presentation.network.client.Client", name="mock_client")
+    def test_error_output(
+        self, mock_client: MagicMock, create_opinion_usecase: CreateOpinion
+    ):
+        """Creating an opinion should return an error output."""
+        mock_client.return_value = mock_client
+        create_opinion_usecase.idea_repository.get_idea_from_community.side_effect = (
+            Exception()
+        )
+
+        output = create_opinion_usecase.execute("1", "1", "content")
+
+        assert output != "Success!"

@@ -175,3 +175,30 @@ class TestCreateIdea:
         create_idea_usecase.execute("1", "content")
 
         create_idea_usecase.symetric_encryption_service.encrypt.assert_called()
+
+    @mock.patch("src.presentation.network.client.Client", name="mock_client")
+    def test_success_output(
+        self,
+        mock_client: MagicMock,
+        create_idea_usecase: CreateIdea,
+    ):
+        """Creating an idea should be possible given the proper arguments."""
+        mock_client.return_value = mock_client
+
+        output = create_idea_usecase.execute("1", "content")
+
+        assert output == "Success!"
+
+    @mock.patch("src.presentation.network.client.Client", name="mock_client")
+    def test_error_output(
+        self,
+        mock_client: MagicMock,
+        create_idea_usecase: CreateIdea,
+    ):
+        """Creating an idea should be possible given the proper arguments."""
+        mock_client.return_value = mock_client
+        create_idea_usecase.id_generator_service.generate.side_effect = Exception()
+
+        output = create_idea_usecase.execute("1", "content")
+
+        assert output != "Success!"

@@ -45,43 +45,47 @@ class CreateOpinion(ICreateOpinion):
         )
         return self.file_service.read_file(symetric_key_path)
 
-    def execute(self, community_id: str, idea_or_opinion_id: str, content: str):
-        symetric_key = self._get_symetric_key(community_id)
-        author = self.machine_service.get_current_user(community_id)
-        members = filter(
-            lambda member: member.authentication_key != author.authentication_key,
-            self.member_repository.get_members_from_community(community_id),
-        )
+    def execute(self, community_id: str, idea_or_opinion_id: str, content: str) -> str:
+        try:
+            symetric_key = self._get_symetric_key(community_id)
+            author = self.machine_service.get_current_user(community_id)
+            members = filter(
+                lambda member: member.authentication_key != author.authentication_key,
+                self.member_repository.get_members_from_community(community_id),
+            )
 
-        parent = self.idea_repository.get_idea_from_community(
-            community_id, idea_or_opinion_id
-        ) or self.opinion_repository.get_opinion_from_community(
-            community_id, idea_or_opinion_id
-        )
+            parent = self.idea_repository.get_idea_from_community(
+                community_id, idea_or_opinion_id
+            ) or self.opinion_repository.get_opinion_from_community(
+                community_id, idea_or_opinion_id
+            )
 
-        if parent is None:
-            raise ParentNotFoundError()
+            if parent is None:
+                raise ParentNotFoundError()
 
-        opinion = Opinion(
-            self.id_generator_service.generate(),
-            content,
-            author,
-            datetime.now(),
-            parent,
-        )
-        self.opinion_repository.add_opinion_to_community(community_id, opinion)
+            opinion = Opinion(
+                self.id_generator_service.generate(),
+                content,
+                author,
+                datetime.now(),
+                parent,
+            )
+            self.opinion_repository.add_opinion_to_community(community_id, opinion)
 
-        for member in members:
-            client_socket: client.Client = None
-            try:
-                client_socket = client.Client()
-                (nonce, tag, cipher) = self.symetric_encryption_service.encrypt(
-                    opinion.to_str(), symetric_key
-                )
-                client_socket.connect_to_server(member.ip_address, member.port)
-                client_socket.send_message(f"CREATE_OPINION|{nonce},{tag},{cipher}")
-            except:
-                pass
-            finally:
-                if client_socket is not None:
-                    client_socket.close_connection()
+            for member in members:
+                client_socket: client.Client = None
+                try:
+                    client_socket = client.Client()
+                    (nonce, tag, cipher) = self.symetric_encryption_service.encrypt(
+                        opinion.to_str(), symetric_key
+                    )
+                    client_socket.connect_to_server(member.ip_address, member.port)
+                    client_socket.send_message(f"CREATE_OPINION|{nonce},{tag},{cipher}")
+                except:
+                    pass
+                finally:
+                    if client_socket is not None:
+                        client_socket.close_connection()
+            return "Success!"
+        except Exception as error:
+            return str(error)

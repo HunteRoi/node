@@ -134,3 +134,25 @@ class TestCreateCommunity:
         create_community_mocks.member_repository.initialize_if_not_exists.assert_called_once()
         create_community_mocks.idea_repository.initialize_if_not_exists.assert_called_once()
         create_community_mocks.opinion_repository.initialize_if_not_exists.assert_called_once()
+
+    def test_success_output(
+        self,
+        create_community_mocks: CreateCommunity,
+    ):
+        """Creating a community should return a success message."""
+        output = create_community_mocks.execute("name", "description")
+
+        assert output == "Success!"
+
+    def test_error_output(
+        self,
+        create_community_mocks: CreateCommunity,
+    ):
+        """Creating a community should return an error message if an error occurs."""
+        create_community_mocks.community_repository.add_community.side_effect = (
+            Exception()
+        )
+
+        output = create_community_mocks.execute("name", "description")
+
+        assert output != "Success!"

@@ -1,4 +1,4 @@
-from consolemenu.items import SubmenuItem, FunctionItem
+from consolemenu.items import FunctionItem, SubmenuItem
 
 from src.application.interfaces.icreate_idea import ICreateIdea
 from src.application.interfaces.icreate_opinion import ICreateOpinion

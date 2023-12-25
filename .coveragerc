@@ -1,6 +1,9 @@
 [run]
 data_file = coverage/.coverage
-omit = tests/*
+omit =
+    tests/*
+    src/presentation/views/*
+    application.py
 disable_warnings = no-data-collected
 [report]
 precision = 2

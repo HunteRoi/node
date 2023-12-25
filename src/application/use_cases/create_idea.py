@@ -40,29 +40,33 @@ class CreateIdea(ICreateIdea):
         )
         return self.file_service.read_file(symetric_key_path)
 
-    def execute(self, community_id: str, content: str):
+    def execute(self, community_id: str, content: str) -> str:
         """Create an idea."""
-        symetric_key = self._get_symetric_key(community_id)
-        author = self.machine_service.get_current_user(community_id)
-        members = filter(
-            lambda member: member.authentication_key != author.authentication_key,
-            self.member_repository.get_members_from_community(community_id),
-        )
+        try:
+            symetric_key = self._get_symetric_key(community_id)
+            author = self.machine_service.get_current_user(community_id)
+            members = filter(
+                lambda member: member.authentication_key != author.authentication_key,
+                self.member_repository.get_members_from_community(community_id),
+            )
 
-        idea = Idea(self.id_generator_service.generate(), content, author)
-        self.idea_repository.add_idea_to_community(community_id, idea)
+            idea = Idea(self.id_generator_service.generate(), content, author)
+            self.idea_repository.add_idea_to_community(community_id, idea)
 
-        for member in members:
-            client_socket: client.Client = None
-            try:
-                client_socket = client.Client()
-                (nonce, tag, cipher) = self.symetric_encryption_service.encrypt(
-                    idea.to_str(), symetric_key
-                )
-                client_socket.connect_to_server(member.ip_address, member.port)
-                client_socket.send_message(f"CREATE_IDEA|{nonce},{tag},{cipher}")
-            except:
-                pass
-            finally:
-                if client_socket is not None:
-                    client_socket.close_connection()
+            for member in members:
+                client_socket: client.Client = None
+                try:
+                    client_socket = client.Client()
+                    (nonce, tag, cipher) = self.symetric_encryption_service.encrypt(
+                        idea.to_str(), symetric_key
+                    )
+                    client_socket.connect_to_server(member.ip_address, member.port)
+                    client_socket.send_message(f"CREATE_IDEA|{nonce},{tag},{cipher}")
+                except:
+                    pass
+                finally:
+                    if client_socket is not None:
+                        client_socket.close_connection()
+            return "Success!"
+        except Exception as error:
+            return str(error)

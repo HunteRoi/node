@@ -38,36 +38,49 @@ class CreateCommunity(ICreateCommunity):
         self.machine_service = machine_service
         self.file_service = file_service
 
-    def execute(self, name: str, description: str):
-        member = self._create_member()
-        community = self._create_community(name, description, member)
+    def execute(self, name: str, description: str) -> str:
+        try:
+            member = self._create_member()
+            community = self._create_community(name, description, member)
 
-        encryption_key_path = self._generate_community_key(community.identifier)
+            encryption_key_path = self._generate_community_key(community.identifier)
 
-        self.community_repository.add_community(
-            community, member.authentication_key, encryption_key_path
-        )
+            self.community_repository.add_community(
+                community, member.authentication_key, encryption_key_path
+            )
 
-        self._initialize_community_database(community.identifier, member)
+            self._initialize_community_database(community.identifier)
+            self._add_member_to_community(community.identifier, member)
+
+            return "Success!"
+        except Exception as error:
+            return str(error)
 
     def _create_member(self) -> Member:
+        """Creates a member with the current user"""
         return self.machine_service.get_current_user()
 
     def _create_community(
         self, name: str, description: str, member: Member
     ) -> Community:
+        """Creates a community with the given parameters"""
         community = Community(self.id_generator_service.generate(), name, description)
         community.add_member(member)
         return community
 
     def _generate_community_key(self, community_id: str) -> str:
+        """Generates a encryption key for the community"""
         key = self.encryption_service.generate_key()
         encryption_key_path = f"{self.keys_folder_path}/{community_id}.key"
         self.file_service.write_file(encryption_key_path, key)
         return encryption_key_path
 
-    def _initialize_community_database(self, community_id: str, member: Member) -> None:
+    def _initialize_community_database(self, community_id: str) -> None:
+        """Initializes the database for the community"""
         self.member_repository.initialize_if_not_exists(community_id)
-        self.member_repository.add_member_to_community(community_id, member)
         self.idea_repository.initialize_if_not_exists(community_id)
         self.opinion_repository.initialize_if_not_exists(community_id)
+
+    def _add_member_to_community(self, community_id: str, member: Member) -> None:
+        """Adds the current user as a member to the community"""
+        self.member_repository.add_member_to_community(community_id, member)

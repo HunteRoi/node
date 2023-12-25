@@ -55,7 +55,7 @@ class AddMember(IAddMember):
             self.private_key,
         ) = self.machine_service.get_asymetric_key_pair()
 
-        error_message = "Failure!"
+        client_socket: IClientSocket = None
         try:
             client_socket = client.Client()
             self._connect_to_guest(client_socket, ip_address, port)
@@ -81,11 +81,12 @@ class AddMember(IAddMember):
             return "Success!"
         except AuthentificationFailedError as error:
             self._send_reject_message(client_socket, error.inner_error)
-            return error_message
-        except:
-            return error_message
+            return error.inner_error
+        except Exception as error:
+            return str(error)
         finally:
-            client_socket.close_connection()
+            if client_socket is not None:
+                client_socket.close_connection()
 
     def _connect_to_guest(
         self, client_socket: IClientSocket, ip_address: str, port: int

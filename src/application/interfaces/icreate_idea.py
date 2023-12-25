@@ -5,5 +5,5 @@ class ICreateIdea(ABC):
     """Represents the use case to create an idea."""
 
     @abstractmethod
-    def execute(self, community_id: str, content: str):
+    def execute(self, community_id: str, content: str) -> str:
         """Creates an idea."""

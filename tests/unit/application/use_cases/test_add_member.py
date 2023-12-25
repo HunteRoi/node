@@ -401,7 +401,7 @@ class TestAddMember:
 
         message = add_member_usecase.execute("abc", "127.0.0.1", 1234)
 
-        assert message == "Failure!"
+        assert message != "Success!"
 
     @mock.patch("src.presentation.network.client.Client", name="mock_client")
     def test_get_community_informations(
@@ -529,3 +529,39 @@ class TestAddMember:
         add_member_usecase.execute("abc", "127.0.0.1", 1234)
 
         mock_client.send_message.assert_any_call("DATABASE|nonce,tag,encr_database")
+
+    @mock.patch("src.presentation.network.client.Client", name="mock_client")
+    def test_success_output(
+        self,
+        mock_client: MagicMock,
+        add_member_usecase: AddMember,
+    ):
+        """Method to test that the str output is correct"""
+        guest = tuple(["127.0.0.1", 1111])
+        mock_client.receive_message.side_effect = [
+            tuple(["public_key", guest]),
+            tuple(["encr_auth_code", guest]),
+        ]
+        mock_client.return_value = mock_client
+
+        output = add_member_usecase.execute("abc", "127.0.0.1", 1234)
+
+        assert output == "Success!"
+
+    @mock.patch("src.presentation.network.client.Client", name="mock_client")
+    def test_error_output(
+        self,
+        mock_client: MagicMock,
+        add_member_usecase: AddMember,
+    ):
+        """Method to test that the str output is correct when an exception is raised"""
+        guest = tuple(["127.0.0.1", 1111])
+        mock_client.receive_message.side_effect = [
+            tuple(["public_key", guest]),
+            tuple(["encr_auth_code", guest]),
+        ]
+        mock_client.side_effect = Exception()
+
+        output = add_member_usecase.execute("abc", "127.0.0.1", 1234)
+
+        assert output != "Success!"
