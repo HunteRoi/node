@@ -82,7 +82,12 @@ class Application:
             self.datetime_service,
         )
         self.join_community_usecase = JoinCommunity(
-            self.asymetric_encryption_service, self.machine_service
+            keys_path,
+            self.symetric_encryption_service,
+            self.asymetric_encryption_service,
+            self.machine_service,
+            self.file_service,
+            self.community_repository,
         )
         self.read_communities_usecase = ReadCommunities(self.community_repository)
         self.read_ideas_from_community_usecase = ReadIdeasFromCommunity(

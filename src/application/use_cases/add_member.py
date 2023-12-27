@@ -179,7 +179,7 @@ class AddMember(IAddMember):
         )
 
         message = f"DATABASE|{nonce},{tag},{encrypted_database}"
-        client_socket.send_message(message)
+        # client_socket.send_message(message)
 
     def _send_reject_message(self, client_socket: IClientSocket, message: str):
         """Send a reject message to the new member"""

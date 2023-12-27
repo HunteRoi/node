@@ -7,5 +7,5 @@ class IJoinCommunity(ABC):
     """Join a community"""
 
     @abstractmethod
-    def execute(self, client_socket: IClientSocket):
+    def execute(self, client_socket: IClientSocket) -> str:
         """Execute the use case"""

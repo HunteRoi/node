@@ -39,3 +39,18 @@ class Community:
     def to_str(self) -> str:
         """Returns a string representation of the community."""
         return f"{self.identifier},{self.name},{self.description},{self.creation_date.isoformat()}"
+
+    @staticmethod
+    def from_str(community_str: str):
+        """Returns a community from a string representation."""
+        if community_str == "":
+            raise ValueError("The community string is empty")
+
+        values = community_str.split(",")
+        if len(values) != 4:
+            raise ValueError("The community string is invalid")
+
+        identifier, name, description, creation_date_str = values
+        creation_date = datetime.fromisoformat(creation_date_str)
+
+        return Community(identifier, name, description, creation_date)

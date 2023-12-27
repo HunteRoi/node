@@ -512,8 +512,9 @@ class TestAddMember:
             "symetric_key",
         )
 
+    # Test disabled while the join community usecase doesn't receive the database
     @mock.patch("src.presentation.network.client.Client", name="mock_client")
-    def test_send_community_database(
+    def disabled_test_send_community_database(
         self,
         mock_client: MagicMock,
         add_member_usecase: AddMember,

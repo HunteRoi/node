@@ -1,4 +1,5 @@
 from datetime import datetime
+import pytest
 
 from src.domain.entities.community import Community
 from src.domain.entities.member import Member
@@ -130,3 +131,48 @@ class TestCommunity:
         community = Community("1", "name", "desc", creation_date)
 
         assert community.to_str() == "1,name,desc,2021-01-01T00:00:00"
+
+    def test_create_community_from_to_string(self):
+        """Validate that a community can be created from a string"""
+        creation_date = datetime.fromisoformat("2021-01-01T00:00:00")
+        community = Community("1", "name", "desc", creation_date)
+        community_str = "1,name,desc,2021-01-01T00:00:00"
+
+        assert Community.from_str(community_str) == community
+
+    def test_create_community_from_to_string_with_different_id(self):
+        """Validate that a community can be created from a string
+        with a different ID"""
+        creation_date = datetime.fromisoformat("2021-01-01T00:00:00")
+        community = Community("2", "name", "desc", creation_date)
+        community_str = "1,name,desc,2021-01-01T00:00:00"
+
+        assert Community.from_str(community_str) != community
+
+    def test_create_community_from_to_string_with_empty_string(self):
+        """Validate that a community can be created from an empty string"""
+        community_str = ""
+
+        with pytest.raises(ValueError):
+            Community.from_str(community_str)
+
+    def test_create_community_from_to_string_with_not_enough_values(self):
+        """Validate that a community can be created from a string with not enough values"""
+        community_str = "1,name,desc"
+
+        with pytest.raises(ValueError):
+            Community.from_str(community_str)
+
+    def test_create_community_from_to_string_with_invalid_string(self):
+        """Validate that a community can be created from a string with invalid string"""
+        community_str = "1/name.desc,2021-01-01T00:00:00"
+
+        with pytest.raises(ValueError):
+            Community.from_str(community_str)
+
+    def test_create_community_from_to_string_with_invalid_date(self):
+        """Validate that a community can be created from a string with invalid date"""
+        community_str = "1,name,desc,01/01/2021"
+
+        with pytest.raises(ValueError):
+            Community.from_str(community_str)

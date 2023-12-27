@@ -39,6 +39,14 @@ sequenceDiagram
         m ->> m: Chiffre la clé symétrique de la communauté avec la clé publique de l'invité
         m ->> i: Envoie une confirmation avec la clé symétrique de la communauté chiffrée
         i ->> i: Déchiffre la clé symétrique de la communauté avec sa clé privée
+        m ->> m: Chiffre les informations de la communauté avec la clé symétrique de la communauté
+        m ->> i: Envoie les informations de la communauté chiffrées
+        i ->> i: Déchiffre les informations de la communauté avec la clé symétrique de la communauté
+        i ->> i: Enregistre les informations de la communauté et la clé symétrique
+        m ->> m: Chiffre la base de données de la communauté avec la clé symétrique de la communauté
+        m ->> i: Envoie la base de données de la communauté chiffrée
+        i ->> i: Déchiffre la base de données de la communauté avec la clé symétrique de la communauté
+        i ->> i: Enregistre la base de données de la communauté
     else Le code n'est pas identique
         m ->> i: Envoie une infirmation
     end
