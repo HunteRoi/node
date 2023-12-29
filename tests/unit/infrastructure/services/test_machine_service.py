@@ -60,18 +60,36 @@ class TestMachineService:
 
         assert ip_address is not None
 
+    @mock.patch("socket.socket", name="socket_error_gen")
     @mock.patch("socket.gethostbyname", name="socket")
     def test_get_ip_address(
         self,
         socket: MagicMock,
+        socket_error_gen: MagicMock,
         machine_service: MachineService,
     ):
         """Test getting the IP address."""
+        socket_error_gen.side_effect = Exception()
         ip_address_expected = "127.0.0.1"
         socket.return_value = ip_address_expected
 
         ip_address = machine_service.get_ip_address()
 
+        assert ip_address == ip_address_expected
+
+    @mock.patch("socket.socket", name="socket")
+    def test_get_ip_address_connects_to_external_service(
+        self, socket_mock: MagicMock, machine_service: MachineService
+    ):
+        """Test getting the IP address."""
+        ip_address_expected = "127.0.0.1"
+        socket_mock.return_value = socket_mock
+        socket_mock.getsockname.return_value = [ip_address_expected]
+
+        ip_address = machine_service.get_ip_address()
+
+        socket_mock.connect.assert_called_once()
+        socket_mock.close.assert_called_once()
         assert ip_address == ip_address_expected
 
     def test_get_asymetric_encryption_keys_generate_called(

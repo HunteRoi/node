@@ -31,7 +31,16 @@ class MachineService(IMachineService):
         self.datetime_service = datetime_service
 
     def get_ip_address(self) -> str:
-        return socket.gethostbyname(socket.gethostname())
+        dns_socket: socket.socket | None = None
+        try:
+            dns_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            dns_socket.connect(("8.8.8.8", 80))
+            return dns_socket.getsockname()[0]
+        except:
+            return socket.gethostbyname(socket.gethostname())
+        finally:
+            if dns_socket is not None:
+                dns_socket.close()
 
     def get_auth_key(self, community_id: str | None = None) -> str:
         if community_id is None:
