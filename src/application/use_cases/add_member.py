@@ -75,7 +75,7 @@ class AddMember(IAddMember):
             self._send_community_symetric_key(client_socket)
 
             self._send_community_informations(client_socket, community_id)
-
+            self._receive_acknowledgement(client_socket)
             self._send_community_database(client_socket, self.base_path, community_id)
 
             return "Success!"
@@ -166,6 +166,13 @@ class AddMember(IAddMember):
         message = f"INFORMATIONS|{nonce},{tag},{encrypted_informations}"
         client_socket.send_message(message)
 
+    def _receive_acknowledgement(self, client_socket: IClientSocket):
+        """Receive the acknowledgement"""
+        message, _ = client_socket.receive_message()
+
+        if not message or message != "ACK":
+            raise AuthentificationFailedError("No acknowledgement received")
+
     def _send_community_database(
         self, client_socket: IClientSocket, base_path: str, community_id: str
     ):
@@ -179,7 +186,7 @@ class AddMember(IAddMember):
         )
 
         message = f"DATABASE|{nonce},{tag},{encrypted_database}"
-        # client_socket.send_message(message)
+        client_socket.send_message(message)
 
     def _send_reject_message(self, client_socket: IClientSocket, message: str):
         """Send a reject message to the new member"""

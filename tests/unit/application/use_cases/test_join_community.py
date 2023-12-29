@@ -42,9 +42,10 @@ class TestJoinCommunity:
             "public_key",
             "private_key",
         )
-        symetric_encryption_service.decrypt.return_value = (
-            "id,name,description,2021-01-01T00:00:00"
-        )
+        symetric_encryption_service.decrypt.side_effect = [
+            "id,name,description,2021-01-01T00:00:00",
+            "6465637279707465645f6461746162617365",
+        ]
         asymetric_encryption_service.encrypt.return_value = "encr_auth_key"
         asymetric_encryption_service.decrypt.side_effect = [
             "auth_key",
@@ -52,6 +53,7 @@ class TestJoinCommunity:
         ]
 
         return JoinCommunity(
+            "base_path",
             "keys_folder_path",
             symetric_encryption_service,
             asymetric_encryption_service,
@@ -70,6 +72,7 @@ class TestJoinCommunity:
             tuple(["encr_auth_key", member]),
             tuple(["encr_symetric_key", member]),
             tuple(["INFORMATIONS|nonce,tag,encr_community_informations", member]),
+            tuple(["DATABASE|nonce,tag,encrypted_database", member]),
         ]
         return mock_client
 
@@ -115,7 +118,7 @@ class TestJoinCommunity:
         """Test that the symetric key is decrypted"""
         join_community_use_case.execute(mock_client)
 
-        join_community_use_case.asymetric_encryption_service.decrypt.assert_called_with(
+        join_community_use_case.asymetric_encryption_service.decrypt.assert_any_call(
             "encr_symetric_key", "private_key"
         )
 
@@ -125,7 +128,7 @@ class TestJoinCommunity:
         """Test that the community informations are decrypted"""
         join_community_use_case.execute(mock_client)
 
-        join_community_use_case.symetric_encryption_service.decrypt.assert_called_with(
+        join_community_use_case.symetric_encryption_service.decrypt.assert_any_call(
             "encr_community_informations", "symetric_key", "tag", "nonce"
         )
 
@@ -135,7 +138,7 @@ class TestJoinCommunity:
         """Test that the symetric key is saved"""
         join_community_use_case.execute(mock_client)
 
-        join_community_use_case.file_service.write_file.assert_called_with(
+        join_community_use_case.file_service.write_file.assert_any_call(
             "keys_folder_path/id.key", "symetric_key"
         )
 
@@ -146,6 +149,34 @@ class TestJoinCommunity:
         join_community_use_case.execute(mock_client)
 
         join_community_use_case.community_repository.add_community.assert_called_once()
+
+    def test_send_acknowledgement(
+        self, join_community_use_case: JoinCommunity, mock_client: MagicMock
+    ):
+        """Test that the acknowledgement is sent"""
+        join_community_use_case.execute(mock_client)
+
+        mock_client.send_message.assert_any_call("ACK")
+
+    def test_received_community_database_decryption(
+        self, join_community_use_case: JoinCommunity, mock_client: MagicMock
+    ):
+        """Test that the community database is decrypted"""
+        join_community_use_case.execute(mock_client)
+
+        join_community_use_case.symetric_encryption_service.decrypt.assert_any_call(
+            "encrypted_database", "symetric_key", "tag", "nonce"
+        )
+
+    def test_save_community_database(
+        self, join_community_use_case: JoinCommunity, mock_client: MagicMock
+    ):
+        """Test that the community database is saved"""
+        join_community_use_case.execute(mock_client)
+
+        join_community_use_case.file_service.write_file.assert_any_call(
+            "base_path/id.sqlite", b"decrypted_database"
+        )
 
     def test_connection_closed(
         self,

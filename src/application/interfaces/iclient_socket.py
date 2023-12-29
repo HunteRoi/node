@@ -9,7 +9,9 @@ class IClientSocket(ABC):
         """Connect to server"""
 
     @abstractmethod
-    def send_message(self, message: str, ip_adress: str | None = None, port: int | None = None):
+    def send_message(
+        self, message: str, ip_address: str | None = None, port: int | None = None
+    ):
         """Send message"""
 
     @abstractmethod

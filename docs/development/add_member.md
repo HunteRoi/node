@@ -43,6 +43,7 @@ sequenceDiagram
         m ->> i: Envoie les informations de la communauté chiffrées
         i ->> i: Déchiffre les informations de la communauté avec la clé symétrique de la communauté
         i ->> i: Enregistre les informations de la communauté et la clé symétrique
+        i ->> m: Envoie un accusé de réception pour informé qu'il a bien reçu les informations
         m ->> m: Chiffre la base de données de la communauté avec la clé symétrique de la communauté
         m ->> i: Envoie la base de données de la communauté chiffrée
         i ->> i: Déchiffre la base de données de la communauté avec la clé symétrique de la communauté
@@ -57,5 +58,10 @@ sequenceDiagram
 Lors de ce développement, une modification dans l'organisation des menus a été apportée. Auparavant, dans le menu principal, l'utilisateur avait le choix de consulter le contenu d'une communauté. Désormais, ce choix est remplacé par l'option de se connecter à une communauté. Cette dernière permet à l'utilisateur de choisir à quelle communauté il veut se connecter. Lorsqu'il en choisit une, il a le choix de consulter les idées et les prises de position de cette communauté ou d'ajouter un nouveau membre. S'il choisit d'ajouter un nouveau membre, il doit entrer l'adresse ip et le port de contact de la machine de l'invité.
 
 ### Sockets
+#### Mise en place
 Ce développement a permis d'intégrer l'utilisation des sockets créées plus tôt. Tout d'abord, le server socket a pour rôle de réceptionner tous les messages inattendus par la machine. Il est créé lors du lancement de l'application et est isolé dans un thread. Lorsqu'il reçoit une connexion, il crée un socket client qui réalisera les actions et les communications nécessaires. Le server socket fonctionne en mode TCP. Pour cela, il utilise la méthode `socket.accept()` qui permet d'attendre une connexion. Cette méthode est dit bloquante : elle arrête l'exécution du programme tant qu'aucune connexion n'est reçue. Cela est problématique quand nous devons arrêter le socket. Pour cela, nous utilisons la méthode `socket.settimeout()` qui permet de définir un temps d'attente maximal. Si aucune connexion n'est reçue dans ce temps, une exception est levée.
 Ensuite, les sockets client sont créés quand c'est nécessaire et sont directement fermés après utilisation.
+
+#### Envoi et réception de long messages
+A la fin de l'ajout d'un membre, il faut envoyer, au nouveau membre, la base de données de la communauté. Celle-ci est contenue dans un fichier et est assez volumineuse. Elle ne peut donc pas être envoyée en une seule fois. Pour pouvoir la transmettre, nous avons mis en place un système d'envoi et de réception de messages volumineux. Ce système consiste à envoyer le message en plusieurs morceaux. Un morceau est de taille égale à celle du buffer utilisé par les sockets.  
+Pour envoyer le message par morceaux, le socket découpe et envoie un morceau tant que le message initial n'est pas envoyé entièrement. Pour le réceptionner, le socket reçoit chaque morceau et les concatène jusqu'à ce que le message initial soit reconstitué. Pour savoir si le message est entièrement reçu, on se base sur le principe que si un socket attend un message qu'il ne reçoit, il donne un message de retour vide. Donc on peut dire que le message initial est entièrement reçu quand le socket reçoit un message vide.

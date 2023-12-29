@@ -95,6 +95,7 @@ class TestAddMember:
         mock_client.receive_message.side_effect = [
             tuple(["public_key", guest]),
             tuple(["encr_auth_code", guest]),
+            tuple(["ACK", guest]),
         ]
         mock_client.return_value = mock_client
 
@@ -116,6 +117,7 @@ class TestAddMember:
         mock_client.receive_message.side_effect = [
             tuple(["public_key", guest]),
             tuple(["encr_auth_code", guest]),
+            tuple(["ACK", guest]),
         ]
         mock_client.return_value = mock_client
 
@@ -134,6 +136,7 @@ class TestAddMember:
         mock_client.receive_message.side_effect = [
             tuple(["public_key", guest]),
             tuple(["encr_auth_code", guest]),
+            tuple(["ACK", guest]),
         ]
         mock_client.return_value = mock_client
 
@@ -152,6 +155,7 @@ class TestAddMember:
         mock_client.receive_message.side_effect = [
             tuple(["public_key", guest]),
             tuple(["encr_auth_code", guest]),
+            tuple(["ACK", guest]),
         ]
         mock_client.return_value = mock_client
 
@@ -170,6 +174,7 @@ class TestAddMember:
         mock_client.receive_message.side_effect = [
             tuple(["public_key", guest]),
             tuple(["encr_auth_code", guest]),
+            tuple(["ACK", guest]),
         ]
         mock_client.return_value = mock_client
 
@@ -190,6 +195,7 @@ class TestAddMember:
         mock_client.receive_message.side_effect = [
             tuple(["public_key", guest]),
             tuple(["encr_auth_code", guest]),
+            tuple(["ACK", guest]),
         ]
         mock_client.return_value = mock_client
 
@@ -208,6 +214,7 @@ class TestAddMember:
         mock_client.receive_message.side_effect = [
             tuple(["public_key", guest]),
             tuple(["encr_auth_code", guest]),
+            tuple(["ACK", guest]),
         ]
         mock_client.return_value = mock_client
 
@@ -228,6 +235,7 @@ class TestAddMember:
         mock_client.receive_message.side_effect = [
             tuple(["public_key", guest]),
             tuple(["encr_auth_code", guest]),
+            tuple(["ACK", guest]),
         ]
         mock_client.return_value = mock_client
 
@@ -252,6 +260,7 @@ class TestAddMember:
         mock_client.receive_message.side_effect = [
             tuple(["public_key", guest]),
             tuple(["encr_auth_code", guest]),
+            tuple(["ACK", guest]),
         ]
         mock_client.return_value = mock_client
 
@@ -278,6 +287,7 @@ class TestAddMember:
         mock_client.receive_message.side_effect = [
             tuple(["public_key", guest]),
             tuple(["encr_auth_code", guest]),
+            tuple(["ACK", guest]),
         ]
         mock_client.return_value = mock_client
 
@@ -296,6 +306,7 @@ class TestAddMember:
         mock_client.receive_message.side_effect = [
             tuple(["public_key", guest]),
             tuple(["encr_auth_code", guest]),
+            tuple(["ACK", guest]),
         ]
         mock_client.return_value = mock_client
 
@@ -314,6 +325,7 @@ class TestAddMember:
         mock_client.receive_message.side_effect = [
             tuple(["public_key", guest]),
             tuple(["encr_auth_code", guest]),
+            tuple(["ACK", guest]),
         ]
         mock_client.return_value = mock_client
 
@@ -334,6 +346,7 @@ class TestAddMember:
         mock_client.receive_message.side_effect = [
             tuple(["public_key", guest]),
             tuple(["encr_auth_code", guest]),
+            tuple(["ACK", guest]),
         ]
         mock_client.return_value = mock_client
 
@@ -352,6 +365,7 @@ class TestAddMember:
         mock_client.receive_message.side_effect = [
             tuple(["public_key", guest]),
             tuple(["encr_auth_code", guest]),
+            tuple(["ACK", guest]),
         ]
         mock_client.return_value = mock_client
 
@@ -376,6 +390,7 @@ class TestAddMember:
         mock_client.receive_message.side_effect = [
             tuple(["public_key", guest]),
             tuple(["encr_auth_code", guest]),
+            tuple(["ACK", guest]),
         ]
         mock_client.return_value = mock_client
 
@@ -394,6 +409,7 @@ class TestAddMember:
         mock_client.receive_message.side_effect = [
             tuple(["public_key", guest]),
             tuple(["encr_auth_code", guest]),
+            tuple(["ACK", guest]),
         ]
         mock_client.return_value = mock_client
 
@@ -414,6 +430,7 @@ class TestAddMember:
         mock_client.receive_message.side_effect = [
             tuple(["public_key", guest]),
             tuple(["encr_auth_code", guest]),
+            tuple(["ACK", guest]),
         ]
         mock_client.return_value = mock_client
 
@@ -434,6 +451,7 @@ class TestAddMember:
         mock_client.receive_message.side_effect = [
             tuple(["public_key", guest]),
             tuple(["encr_auth_code", guest]),
+            tuple(["ACK", guest]),
         ]
         mock_client.return_value = mock_client
 
@@ -461,6 +479,7 @@ class TestAddMember:
         mock_client.receive_message.side_effect = [
             tuple(["public_key", guest]),
             tuple(["encr_auth_code", guest]),
+            tuple(["ACK", guest]),
         ]
         mock_client.return_value = mock_client
 
@@ -481,6 +500,7 @@ class TestAddMember:
         mock_client.receive_message.side_effect = [
             tuple(["public_key", guest]),
             tuple(["encr_auth_code", guest]),
+            tuple(["ACK", guest]),
         ]
         mock_client.return_value = mock_client
 
@@ -502,6 +522,7 @@ class TestAddMember:
         mock_client.receive_message.side_effect = [
             tuple(["public_key", guest]),
             tuple(["encr_auth_code", guest]),
+            tuple(["ACK", guest]),
         ]
         mock_client.return_value = mock_client
 
@@ -512,9 +533,8 @@ class TestAddMember:
             "symetric_key",
         )
 
-    # Test disabled while the join community usecase doesn't receive the database
     @mock.patch("src.presentation.network.client.Client", name="mock_client")
-    def disabled_test_send_community_database(
+    def test_send_community_database(
         self,
         mock_client: MagicMock,
         add_member_usecase: AddMember,
@@ -524,6 +544,7 @@ class TestAddMember:
         mock_client.receive_message.side_effect = [
             tuple(["public_key", guest]),
             tuple(["encr_auth_code", guest]),
+            tuple(["ACK", guest]),
         ]
         mock_client.return_value = mock_client
 
@@ -542,6 +563,7 @@ class TestAddMember:
         mock_client.receive_message.side_effect = [
             tuple(["public_key", guest]),
             tuple(["encr_auth_code", guest]),
+            tuple(["ACK", guest]),
         ]
         mock_client.return_value = mock_client
 
@@ -560,6 +582,7 @@ class TestAddMember:
         mock_client.receive_message.side_effect = [
             tuple(["public_key", guest]),
             tuple(["encr_auth_code", guest]),
+            tuple(["ACK", guest]),
         ]
         mock_client.side_effect = Exception()
 
@@ -576,6 +599,7 @@ class TestAddMember:
         mock_client.receive_message.side_effect = [
             tuple(["public_key", guest]),
             tuple(["encr_auth_code", guest]),
+            tuple(["ACK", guest]),
         ]
         mock_client.return_value = mock_client
         ip_address = "127.0.0.1"

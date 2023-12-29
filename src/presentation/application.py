@@ -82,6 +82,7 @@ class Application:
             self.datetime_service,
         )
         self.join_community_usecase = JoinCommunity(
+            base_path,
             keys_path,
             self.symetric_encryption_service,
             self.asymetric_encryption_service,

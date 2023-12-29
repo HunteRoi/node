@@ -20,6 +20,7 @@ class JoinCommunity(IJoinCommunity):
 
     def __init__(
         self,
+        base_path: str,
         keys_folder_path: str,
         symetric_encryption_service: ISymetricEncryptionService,
         asymetric_encryption_service: IAsymetricEncryptionService,
@@ -27,6 +28,7 @@ class JoinCommunity(IJoinCommunity):
         file_service: IFileService,
         community_repository: ICommunityRepository,
     ):
+        self.base_path = base_path
         self.keys_folder_path = keys_folder_path
         self.symetric_encryption_service = symetric_encryption_service
         self.asymetric_encryption_service = asymetric_encryption_service
@@ -58,6 +60,10 @@ class JoinCommunity(IJoinCommunity):
 
             symetric_key_path = self._save_symetric_key(community.identifier)
             self._save_community_informations(community, auth_key, symetric_key_path)
+            self._send_acknowledgement(client_socket)
+
+            community_database = self._receive_community_database(client_socket)
+            self._save_community_database(community.identifier, community_database)
 
             return "Success!"
         except Exception as error:
@@ -147,3 +153,29 @@ class JoinCommunity(IJoinCommunity):
             auth_key,
             symetric_key_path,
         )
+
+    def _send_acknowledgement(self, client_socket: IClientSocket):
+        """Send acknowledgement"""
+        client_socket.send_message("ACK")
+
+    def _receive_community_database(self, client_socket: IClientSocket):
+        """Receive the community database"""
+        message, _ = client_socket.receive_message()
+
+        if not message:
+            raise AuthentificationFailedError("No community database received")
+
+        message = message.split("|", maxsplit=1)[1]
+        nonce, tag, encrypted_database = message.split(",", maxsplit=2)
+
+        decrypted_database = self.symetric_encryption_service.decrypt(
+            encrypted_database, self.symetric_key, tag, nonce
+        )
+
+        return decrypted_database
+
+    def _save_community_database(self, community_id: str, community_database: str):
+        """Save the community database"""
+        community_database_path = f"{self.base_path}/{community_id}.sqlite"
+        database_bytes = bytes.fromhex(community_database)
+        self.file_service.write_file(community_database_path, database_bytes)
