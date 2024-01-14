@@ -1,7 +1,9 @@
 # Gestion de l'architecture du réseau
 
-Nous allons construire le système informatique de dépôt d'idées et de prises de position sur une architecture en Peer-to-Peer : une architecture réseau distribué décentralisé.  
-Cette architecture implique que chaque machine connectée au réseau (appelée noeud) doit posséder ses propres données et doit pouvoir communiquer avec les autres noeuds du réseau. Une telle architecture évite ainsi l'utilisation d'un serveur central et évite les coûts qui y sont liés.
+La construction du système informatique de dépôt d'idées et de prises de position (SIDIPP) s’est réalisée sur base d’une architecture en réseau distribué décentralisé. Ce type d’architecture implique que chaque machine connectée au réseau (appelée nœud) possède ses propres données et doit pouvoir communiquer avec les autres nœuds du réseau. Une telle architecture évite ainsi l'utilisation d'un serveur central et évite les coûts qui y sont liés. Dans un contexte comme celui d’un SIDIPP, il a été posé qu’un réseau représente une communauté (ie. un ensemble de membres, commes les voisins d’un même quartier).
+La première version de l’analyse et du développement du réseau distribué a été établie sur une topologie d’un réseau maillé (chaque noeud possède un certain nombre de connexions vers d’autres noeuds – dans ce cas-ci, tous les noeuds sont interconnectés).
+Cependant, après un premier travail de refonte par l’équipe technique, il a été décidé de préciser l’algorithme pour spécifier une topologie réseau moins coûteuse en ressources: le réseau en arbre (hiérarchie). L’analyse a été poussée dans cette optique, et le développement du produit a déjà entamé une courbe vers cet objectif.
+![Changement architecture réseau](architecture-update.png)
 
 ## Types d'individus dans une communauté
 ### Un membre
